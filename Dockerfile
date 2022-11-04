@@ -27,13 +27,13 @@ RUN pyenv update \
     && pyenv install 3.8.15 \
     && pyenv install 3.9.15
 
-# create symlinks to venv python
+# create symlinks to python versions
 RUN ln -snf /pyenv/versions/3.8.15/bin/python3 /usr/bin/python-cp38 &&\
-        ln -snf /pyenv/versions/3.9.15/envs/venv-cp39/bin/python3 /usr/bin/python-cp39
+        ln -snf /pyenv/versions/3.9.15/bin/python3 /usr/bin/python-cp39
 
 ARG CIBUILDWHEEL_VERSION=2.8.0
 
-# set up each venv
+# set up each python version
 RUN python-cp38 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
         python-cp39 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
