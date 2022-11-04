@@ -24,14 +24,12 @@ RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.ta
 
 # Create pyenvs for 3.8 and 3.9
 RUN pyenv update \
-    && pyenv install 3.8 \
-    && pyenv install 3.9 \
-    && pyenv virtualenv 3.8 venv-cp38 \
-    && pyenv virtualenv 3.9 venv-cp39
+    && pyenv install 3.8.15 \
+    && pyenv install 3.9.15
 
 # create symlinks to venv python
-RUN ln -snf /pyenv/versions/3.8/envs/venv-cp38/bin/python3 /usr/bin/python-cp38 &&\
-        ln -snf /pyenv/versions/3.9/envs/venv-cp39/bin/python3 /usr/bin/python-cp39
+RUN ln -snf /pyenv/versions/3.8.15/bin/python3 /usr/bin/python-cp38 &&\
+        ln -snf /pyenv/versions/3.9.15/envs/venv-cp39/bin/python3 /usr/bin/python-cp39
 
 ARG CIBUILDWHEEL_VERSION=2.8.0
 
@@ -40,6 +38,9 @@ RUN python-cp38 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION
         python-cp39 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
 # make cp38 default
-RUN pyenv global venv-cp38 && python --version
+RUN pyenv global 3.8.15 && python --version
+
+# add bin to path
+ENV PATH="/pyenv/versions/3.8.15/bin/:/pyenv/versions/3.9.15/bin/:$PATH"
 
 CMD ["/bin/bash"]
