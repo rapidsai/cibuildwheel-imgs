@@ -44,6 +44,7 @@ jobs:
           --build-arg CIBUILDWHEEL_VERSION=2.8.0
           -t rapidsai/cibuildwheel_${{ matrix.cpu-arch }}
           --pull
+          .
       - name: Push rapidsai/cibuildwheel containers to DockerHub
         if: ${{ inputs.push }}
         run: docker push rapidsai/cibuildwheel_${{ matrix.cpu-arch }}
