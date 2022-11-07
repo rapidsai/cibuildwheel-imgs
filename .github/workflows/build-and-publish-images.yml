@@ -83,7 +83,7 @@ jobs:
           --build-arg BASE_IMAGE=${{ matrix.base-image }}
           -t rapidsai/citestwheel_${{ matrix.linux-arch }}
           --pull
-          .
+          ./context-citestwheel
       - name: Push rapidsai/citestwheel containers to DockerHub
         if: ${{ inputs.push }}
         run: docker push rapidsai/citestwheel_${{ matrix.linux-arch }}

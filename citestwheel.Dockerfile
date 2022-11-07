@@ -58,4 +58,6 @@ RUN echo \
 
 RUN apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
 
+COPY citestwheel.sh /citestwheel.sh
+
 CMD ["/bin/bash"]
