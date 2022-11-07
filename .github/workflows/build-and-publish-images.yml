@@ -8,7 +8,7 @@ on:
         type: boolean
 
 jobs:
-  docker-manylinux:
+  docker-cibuildwheel:
     name: ${{ matrix.base-image }} ${{ matrix.labels[2] }}
     runs-on: ${{ matrix.labels }}
     strategy:
@@ -21,7 +21,6 @@ jobs:
           - labels: [self-hosted, linux, amd64, cpu4]
             linux-arch: x86_64
             base-image: nvidia/cuda:11.5.1-runtime-ubuntu18.04
-
     env:
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
@@ -39,7 +38,7 @@ jobs:
       - name: Build rapidsai/cibuildwheel container
         run: >
           docker build
-          -f Dockerfile
+          -f cibuildwheel.Dockerfile
           --build-arg CPU_ARCH=${{ matrix.labels[2] }}
           --build-arg BASE_IMAGE=${{ matrix.base-image }}
           --build-arg CIBUILDWHEEL_VERSION=2.8.0
@@ -49,3 +48,42 @@ jobs:
       - name: Push rapidsai/cibuildwheel containers to DockerHub
         if: ${{ inputs.push }}
         run: docker push rapidsai/cibuildwheel_${{ matrix.linux-arch }}
+  docker-citestwheel:
+    name: ${{ matrix.base-image }} ${{ matrix.labels[2] }}
+    runs-on: ${{ matrix.labels }}
+    strategy:
+      matrix:
+        include:
+          - labels: [self-hosted, linux, arm64, cpu4]
+            linux-arch: aarch64
+            base-image: nvidia/cuda:11.5.1-devel-ubuntu20.04
+
+          - labels: [self-hosted, linux, amd64, cpu4]
+            linux-arch: x86_64
+            base-image: nvidia/cuda:11.5.1-devel-ubuntu18.04
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      - name: Build rapidsai/citestwheel container
+        run: >
+          docker build
+          -f citestwheel.Dockerfile
+          --build-arg CPU_ARCH=${{ matrix.labels[2] }}
+          --build-arg BASE_IMAGE=${{ matrix.base-image }}
+          -t rapidsai/citestwheel_${{ matrix.linux-arch }}
+          --pull
+          .
+      - name: Push rapidsai/citestwheel containers to DockerHub
+        if: ${{ inputs.push }}
+        run: docker push rapidsai/citestwheel_${{ matrix.linux-arch }}
