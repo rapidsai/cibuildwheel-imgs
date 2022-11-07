@@ -27,13 +27,9 @@ RUN pyenv update \
     && pyenv install 3.8.15 \
     && pyenv install 3.9.15
 
-# create symlinks to python versions
-RUN ln -snf /pyenv/versions/3.8.15/bin/python3 /usr/bin/python-cp38 &&\
-        ln -snf /pyenv/versions/3.9.15/bin/python3 /usr/bin/python-cp39
-
 # set up each python version
-RUN python-cp38 -m pip install awscli twine &&\
-        python-cp39 -m pip install awscli twine
+RUN /pyenv/versions/3.8.15/bin/python3 -m pip install awscli twine &&\
+        /pyenv/versions/3.9.15/bin/python3 -m pip install awscli twine
 
 # make cp38 default
 RUN pyenv global 3.8.15 && python --version
