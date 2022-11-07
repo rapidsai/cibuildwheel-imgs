@@ -9,7 +9,7 @@ on:
 
 jobs:
   docker-cibuildwheel:
-    name: ${{ matrix.base-image }} ${{ matrix.labels[2] }}
+    name: cibuildwheel ${{ matrix.base-image }} ${{ matrix.labels[2] }}
     runs-on: ${{ matrix.labels }}
     strategy:
       matrix:
@@ -49,7 +49,7 @@ jobs:
         if: ${{ inputs.push }}
         run: docker push rapidsai/cibuildwheel_${{ matrix.linux-arch }}
   docker-citestwheel:
-    name: ${{ matrix.base-image }} ${{ matrix.labels[2] }}
+    name: citestwheel ${{ matrix.base-image }} ${{ matrix.labels[2] }}
     runs-on: ${{ matrix.labels }}
     strategy:
       matrix:
