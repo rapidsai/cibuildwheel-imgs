@@ -23,7 +23,7 @@ RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.ta
   | tar -xz -C /usr/local/bin
 
 # install special gha-tool
-RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-pip-wheel-version -O /usr/local/bin/rapids-pip-wheel-version
+RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-pip-wheel-version -O /usr/local/bin/rapids-pip-wheel-version && chmod +x /usr/local/bin/rapids-pip-wheel-version
 
 # git safe directory
 RUN git config --system --add safe.directory '*'
