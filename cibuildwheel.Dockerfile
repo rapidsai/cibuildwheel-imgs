@@ -22,8 +22,10 @@ RUN curl https://pyenv.run | bash
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - \
   | tar -xz -C /usr/local/bin
 
-# install special gha-tool
+# install special gha-tools from my personal dev fork
 RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-pip-wheel-version -O /usr/local/bin/rapids-pip-wheel-version && chmod +x /usr/local/bin/rapids-pip-wheel-version
+
+RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-twine -O /usr/local/bin/rapids-twine && chmod +x /usr/local/bin/rapids-twine
 
 # git safe directory
 RUN git config --system --add safe.directory '*'
