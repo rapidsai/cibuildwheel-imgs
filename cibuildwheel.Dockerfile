@@ -22,6 +22,12 @@ RUN curl https://pyenv.run | bash
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - \
   | tar -xz -C /usr/local/bin
 
+# install special gha-tool
+RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-pip-wheel-version -O /usr/local/bin/rapids-pip-wheel-version
+
+# git safe directory
+RUN git config --system --add safe.directory '*'
+
 # Create pyenvs for 3.8 and 3.9
 RUN pyenv update \
     && pyenv install 3.8.15 \
