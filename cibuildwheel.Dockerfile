@@ -63,7 +63,7 @@ RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-c
 #  | tar -xz -C /usr/local/bin
 
 # Install gha-tools from sevagh fork
-RUN git clone https://github.com/sevagh/gha-tools.git -b feat/pypi-wheel-version-script /tmp/gha-tools &&\
+RUN git clone https://github.com/sevagh/gha-tools.git -b feat/pip-wheel-version-script /tmp/gha-tools &&\
   cp /tmp/gha-tools/tools/* /usr/local/bin/
 
 CMD ["/bin/bash"]
