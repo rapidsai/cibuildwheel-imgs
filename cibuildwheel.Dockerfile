@@ -18,15 +18,6 @@ RUN apt-get update \
 # Install pyenv
 RUN curl https://pyenv.run | bash
 
-# Install gha-tools
-RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - \
-  | tar -xz -C /usr/local/bin
-
-# install special gha-tools from my personal dev fork
-RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-pip-wheel-version -O /usr/local/bin/rapids-pip-wheel-version && chmod +x /usr/local/bin/rapids-pip-wheel-version
-
-RUN wget https://raw.githubusercontent.com/sevagh/gha-tools/feat/pip-wheel-version-script/tools/rapids-twine -O /usr/local/bin/rapids-twine && chmod +x /usr/local/bin/rapids-twine
-
 # git safe directory
 RUN git config --system --add safe.directory '*'
 
@@ -66,5 +57,13 @@ RUN apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
 
 # update git > 2.17 
 RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-common && add-apt-repository ppa:git-core/ppa -y && apt-get update && apt-get install --upgrade -y git" || true;
+
+# Install latest gha-tools
+#RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - \
+#  | tar -xz -C /usr/local/bin
+
+# Install gha-tools from sevagh fork
+RUN git clone https://github.com/sevagh/gha-tools.git -b feat/pypi-wheel-version-script /tmp/gha-tools &&\
+  cp /tmp/gha-tools/tools/* /usr/local/bin/
 
 CMD ["/bin/bash"]

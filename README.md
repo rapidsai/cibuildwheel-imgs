@@ -1,3 +1,3 @@
 # cibuildwheel-imgs
 
-This repository contains the Dockerfile for cibuildwheel launcher and test images used by RAPIDS.
+This repository contains Dockerfiles for cibuildwheel launcher and test images used by RAPIDS.
