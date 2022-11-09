@@ -18,9 +18,6 @@ RUN apt-get update \
 # Install pyenv
 RUN curl https://pyenv.run | bash
 
-# git safe directory
-RUN git config --system --add safe.directory '*'
-
 # Create pyenvs for 3.8 and 3.9
 RUN pyenv update \
     && pyenv install 3.8.15 \
@@ -65,5 +62,8 @@ RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-c
 # Install gha-tools from sevagh fork
 RUN git clone https://github.com/sevagh/gha-tools.git -b feat/pip-wheel-version-script /tmp/gha-tools &&\
   cp /tmp/gha-tools/tools/* /usr/local/bin/
+
+# git safe directory
+RUN git config --system --add safe.directory '*'
 
 CMD ["/bin/bash"]

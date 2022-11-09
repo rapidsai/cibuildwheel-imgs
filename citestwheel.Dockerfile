@@ -63,4 +63,7 @@ RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-c
 RUN git clone https://github.com/sevagh/gha-tools.git -b feat/pip-wheel-version-script /tmp/gha-tools &&\
   cp /tmp/gha-tools/tools/* /usr/local/bin/
 
+# git safe directory
+RUN git config --system --add safe.directory '*'
+
 CMD ["/bin/bash"]
