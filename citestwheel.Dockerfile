@@ -56,4 +56,7 @@ RUN apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
 
 COPY citestwheel.sh /citestwheel.sh
 
+# update git > 2.17 
+RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-common && add-apt-repository ppa:git-core/ppa -y && apt-get update && apt-get install --upgrade -y git" || true;
+
 CMD ["/bin/bash"]
