@@ -9,7 +9,7 @@ ENV PYENV_ROOT="/pyenv" \
 RUN apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends \
-        wget curl git jq \
+        wget curl git jq ssh \
         make build-essential libssl-dev zlib1g-dev \
         libbz2-dev libreadline-dev libsqlite3-dev wget \
         curl llvm libncursesw5-dev xz-utils tk-dev \
