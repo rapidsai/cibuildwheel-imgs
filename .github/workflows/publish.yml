@@ -11,8 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-images:
-    uses: ./.github/workflows/build-and-publish-images.yml
+  build-cibuildwheel-images:
+    uses: ./.github/workflows/build-and-publish-cibuildwheel.yml
+    with:
+      push: true
+    secrets: inherit
+  build-citestwheel-images:
+    uses: ./.github/workflows/build-and-publish-citestwheel.yml
     with:
       push: true
     secrets: inherit

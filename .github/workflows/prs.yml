@@ -4,8 +4,13 @@ on:
   pull_request:
 
 jobs:
-  build-images:
-    uses: ./.github/workflows/build-and-publish-images.yml
+  build-cibuildwheel:
+    uses: ./.github/workflows/build-and-publish-cibuildwheel.yml
+    with:
+      push: false
+    secrets: inherit
+  build-citestwheel:
+    uses: ./.github/workflows/build-and-publish-citestwheel.yml
     with:
       push: false
     secrets: inherit
