@@ -1,0 +1,58 @@
+name: build and publish RAPIDS cibuildwheel images
+
+on:
+  workflow_call:
+    inputs:
+      push:
+        required: true
+        type: boolean
+
+jobs:
+  docker-cibuildwheel:
+    name: cibuildwheel ${{ matrix.base-image }} ${{ matrix.labels[2] }}
+    runs-on: ${{ matrix.labels }}
+    strategy:
+      matrix:
+        include:
+          - labels: [self-hosted, linux, arm64, cpu4]
+            base-image: nvidia/cuda:11.8.0-runtime-ubuntu20.04
+            image-ctk-tag: "118"
+
+          - labels: [self-hosted, linux, amd64, cpu4]
+            base-image: nvidia/cuda:11.8.0-runtime-ubuntu18.04
+            image-ctk-tag: "118"
+
+          - labels: [self-hosted, linux, arm64, cpu4]
+            base-image: nvidia/cuda:12.0.0-runtime-ubuntu20.04
+            image-ctk-tag: "120"
+
+          - labels: [self-hosted, linux, amd64, cpu4]
+            base-image: nvidia/cuda:12.0.0-runtime-ubuntu18.04
+            image-ctk-tag: "120"
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+      - name: Build rapidsai/cibuildwheel container
+        run: >
+          docker build
+          -f cibuildwheel.Dockerfile
+          --build-arg CPU_ARCH=${{ matrix.labels[2] }}
+          --build-arg BASE_IMAGE=${{ matrix.base-image }}
+          --build-arg CIBUILDWHEEL_VERSION=2.8.0
+          -t rapidsai/cibuildwheel_${{ matrix.labels[2] }}:${{ matrix.image-ctk-tag }}
+          --pull
+          .
+      - name: Push rapidsai/cibuildwheel containers to DockerHub
+        if: ${{ inputs.push }}
+        run: docker push rapidsai/cibuildwheel_${{ matrix.labels[2] }}:${{ matrix.image-ctk-tag }}
