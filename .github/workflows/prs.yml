@@ -5,12 +5,21 @@ on:
 
 jobs:
   build-cibuildwheel:
-    uses: ./.github/workflows/build-and-publish-cibuildwheel.yml
-    with:
-      push: false
+    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-  build-citestwheel:
-    uses: ./.github/workflows/build-and-publish-citestwheel.yml
     with:
-      push: false
-    secrets: inherit
+      docker-tag-multiarch: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+      push-multiarch: false
+      push-perarch: false
+
+      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
+      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+
+      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
+      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
+        
+        #build-citestwheel:
+        #  uses: ./.github/workflows/build-and-publish-citestwheel.yml
+        #  with:
+        #    push: false
+        #  secrets: inherit
