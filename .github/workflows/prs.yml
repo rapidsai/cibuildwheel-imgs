@@ -7,83 +7,57 @@ jobs:
   cibuildwheel-ctk11:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu20.04"
-      CTK: "11.8.0"
-      CUDA_IMAGE: "runtime"
-      CIBUILDWHEEL_VERSION: "2.8.0"
     with:
       push: true
-      docker-tag-multi: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-amd64"
-      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --build-arg CIBUILDWHEEL_VERSION=${{ env.CIBUILDWHEEL_VERSION }} --pull ."
-      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --build-arg CIBUILDWHEEL_VERSION=${{ env.CIBUILDWHEEL_VERSION }} --pull ."
+      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04"
+      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
+      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
+      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
       push: true
   cibuildwheel-ctk12:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu20.04"
-      CTK: "12.0.0"
-      CUDA_IMAGE: "runtime"
-      CIBUILDWHEEL_VERSION: "2.8.0"
     with:
       push: true
-      docker-tag-multi: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-amd64"
-      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --build-arg CIBUILDWHEEL_VERSION=${{ env.CIBUILDWHEEL_VERSION }} --pull ."
-      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --build-arg CIBUILDWHEEL_VERSION=${{ env.CIBUILDWHEEL_VERSION }} --pull ."
+      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04"
+      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-amd64"
+      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-arm64"
+      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
+      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
 
   # arm64 tests run on ubuntu20.04 due to being built on ubuntu20.04 i.e. manylinux_2_31
   citestwheel-arm64-ctk11:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu20.04"
-      CTK: "11.8.0"
-      CUDA_IMAGE: "devel"
     with:
       push: true
-      docker-tag-multi: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-arm64: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-arm64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --pull ./context-citestwheel"
+      docker-tag-multi: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu20.04"
+      docker-tag-arm64: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu20.04-arm64"
+      docker-build-args-arm64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu20.04 --pull ./context-citestwheel"
   citestwheel-arm-ctk12:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu20.04"
-      CTK: "12.0.0"
-      CUDA_IMAGE: "devel"
     with:
       push: true
-      docker-tag-multi: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-arm64: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-arm64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --pull ./context-citestwheel"
+      docker-tag-multi: "rapidsai/citestwheel:cuda-devel-12.0.0-ubuntu20.04"
+      docker-tag-arm64: "rapidsai/citestwheel:cuda-devel-12.0.0-ubuntu20.04-arm64"
+      docker-build-args-arm64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-devel-ubuntu20.04 --pull ./context-citestwheel"
 
   # amd64 tests run on ubuntu18.04 to ensure old OS support
   citestwheel-amd64-ctk11:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu18.04"
-      CTK: "11.8.0"
-      CUDA_IMAGE: "devel"
     with:
       push: true
-      docker-tag-multi: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-amd64: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-amd64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --pull ./context-citestwheel"
+      docker-tag-multi: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04"
+      docker-tag-amd64: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04-amd64"
+      docker-build-args-amd64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu18.04 --pull ./context-citestwheel"
   citestwheel-amd64-ctk12:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
-    env:
-      OS: "ubuntu18.04"
-      CTK: "12.0.0"
-      CUDA_IMAGE: "devel"
     with:
       push: true
-      docker-tag-multi: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}"
-      docker-tag-amd64: "rapidsai/citestwheel:cuda-${{ env.CUDA_IMAGE }}-${{ env.CTK }}-${{ env.OS }}-arm64"
-      docker-build-args-amd64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:${{ env.CTK }}-${{ env.CUDA_IMAGE }}-${{ env.OS }} --pull ./context-citestwheel"
+      docker-tag-multi: "rapidsai/citestwheel:cuda-devel-12.0.0-ubuntu18.04"
+      docker-tag-amd64: "rapidsai/citestwheel:cuda-devel-12.0.0-ubuntu18.04-amd64"
+      docker-build-args-amd64: "-f citestwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-devel-ubuntu18.04 --pull ./context-citestwheel"
