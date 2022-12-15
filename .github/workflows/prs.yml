@@ -13,9 +13,9 @@ jobs:
       docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
       push: true
 
-      docker-build-cmd-amd64: "docker build -f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull . -t rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+      docker-build-args-amd64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
 
-      docker-build-cmd-arm64: "docker build -f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull . -t rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
+      docker-build-args-arm64: "-f cibuildwheel.Dockerfile --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ."
   #build-citestwheel:
   #  uses: ./.github/workflows/build-and-publish-citestwheel.yml
   #  with:
