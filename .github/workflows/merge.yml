@@ -1,7 +1,10 @@
-name: PR CI for cibuildwheel/citestwheel
+name: Push cibuildwheel/citestwheel on merge to main
 
 on:
-  pull_request:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.ref }}"
