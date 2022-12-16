@@ -20,7 +20,7 @@ jobs:
       submodules: 'recursive'
       docker-tag-multi: "rapidsai/manylinux2014:cuda-devel-11.8.0-centos7"
       docker-tag-amd64: "rapidsai/manylinux2014:cuda-devel-11.8.0-centos7-amd64"
-      docker-build-args-amd64: "--build-arg POLICY=manylinux2014 --build-arg PLATFORM=x86_64 --build-arg BASEIMAGE=nvidia/cuda:11.8.0-devel-centos7 --build-arg DEVTOOLSET_ROOTPATH=/opt/rh/devtoolset-10/root --build-arg PREPEND_PATH=/opt/rh/devtoolset-10/root/usr/bin: --build-arg LD_LIBRARY_PATH_ARG=/opt/rh/devtoolset-10/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib:/opt/rh/devtoolset-10/root/usr/lib64/dyninst:/opt/rh/devtoolset-10/root/usr/lib/dyninst:/usr/local/lib64 --rm -f --pull ./manylinux/docker/Dockerfile ./manylinux/docker/"
+      docker-build-args-amd64: "--build-arg POLICY=manylinux2014 --build-arg PLATFORM=x86_64 --build-arg BASEIMAGE=nvidia/cuda:11.8.0-devel-centos7 --build-arg DEVTOOLSET_ROOTPATH=/opt/rh/devtoolset-10/root --build-arg PREPEND_PATH=/opt/rh/devtoolset-10/root/usr/bin: --build-arg LD_LIBRARY_PATH_ARG=/opt/rh/devtoolset-10/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib:/opt/rh/devtoolset-10/root/usr/lib64/dyninst:/opt/rh/devtoolset-10/root/usr/lib/dyninst:/usr/local/lib64 --rm -f ./manylinux/docker/Dockerfile ./manylinux/docker/"
   manylinux2014-amd64-ctk120:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
@@ -29,7 +29,7 @@ jobs:
       submodules: 'recursive'
       docker-tag-multi: "rapidsai/manylinux2014:cuda-devel-12.0.0-centos7"
       docker-tag-amd64: "rapidsai/manylinux2014:cuda-devel-12.0.0-centos7-amd64"
-      docker-build-args-amd64: "--build-arg POLICY=manylinux2014 --build-arg PLATFORM=x86_64 --build-arg BASEIMAGE=nvidia/cuda:12.0.0-devel-centos7 --build-arg DEVTOOLSET_ROOTPATH=/opt/rh/devtoolset-10/root --build-arg PREPEND_PATH=/opt/rh/devtoolset-10/root/usr/bin: --build-arg LD_LIBRARY_PATH_ARG=/opt/rh/devtoolset-10/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib:/opt/rh/devtoolset-10/root/usr/lib64/dyninst:/opt/rh/devtoolset-10/root/usr/lib/dyninst:/usr/local/lib64 --rm -f --pull ./manylinux/docker/Dockerfile ./manylinux/docker/"
+      docker-build-args-amd64: "--build-arg POLICY=manylinux2014 --build-arg PLATFORM=x86_64 --build-arg BASEIMAGE=nvidia/cuda:12.0.0-devel-centos7 --build-arg DEVTOOLSET_ROOTPATH=/opt/rh/devtoolset-10/root --build-arg PREPEND_PATH=/opt/rh/devtoolset-10/root/usr/bin: --build-arg LD_LIBRARY_PATH_ARG=/opt/rh/devtoolset-10/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib:/opt/rh/devtoolset-10/root/usr/lib64/dyninst:/opt/rh/devtoolset-10/root/usr/lib/dyninst:/usr/local/lib64 --rm -f ./manylinux/docker/Dockerfile ./manylinux/docker/"
   # arm64 builds on ubuntu20.04
   manylinux_2_31-arm64-ctk118:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
@@ -39,7 +39,7 @@ jobs:
       submodules: 'recursive'
       docker-tag-multi: "rapidsai/manylinux_2_31:cuda-devel-11.8.0-ubuntu20.04"
       docker-tag-arm64: "rapidsai/manylinux_2_31:cuda-devel-11.8.0-ubuntu20.04-arm64"
-      docker-build-args-arm64: "--build-arg POLICY=manylinux_2_31 --build-arg PLATFORM=aarch64 --build-arg BASEIMAGE=nvidia/cuda:11.8.0-devel-ubuntu20.04 --build-arg DEVTOOLSET_ROOTPATH= --build-arg PREPEND_PATH= --build-arg LD_LIBRARY_PATH_ARG= --rm -f --pull ./manylinux/docker/Dockerfile ./manylinux/docker/"
+      docker-build-args-arm64: "--build-arg POLICY=manylinux_2_31 --build-arg PLATFORM=aarch64 --build-arg BASEIMAGE=nvidia/cuda:11.8.0-devel-ubuntu20.04 --build-arg DEVTOOLSET_ROOTPATH= --build-arg PREPEND_PATH= --build-arg LD_LIBRARY_PATH_ARG= --rm -f ./manylinux/docker/Dockerfile ./manylinux/docker/"
   manylinux_2_31-arm64-ctk120:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
@@ -48,4 +48,4 @@ jobs:
       submodules: 'recursive'
       docker-tag-multi: "rapidsai/manylinux_2_31:cuda-devel-12.0.0-ubuntu20.04"
       docker-tag-arm64: "rapidsai/manylinux_2_31:cuda-devel-12.0.0-ubuntu20.04-arm64"
-      docker-build-args-arm64: "--build-arg POLICY=manylinux_2_31 --build-arg PLATFORM=aarch64 --build-arg BASEIMAGE=nvidia/cuda:12.0.0-devel-ubuntu20.04 --build-arg DEVTOOLSET_ROOTPATH= --build-arg PREPEND_PATH= --build-arg LD_LIBRARY_PATH_ARG= --rm -f --pull ./manylinux/docker/Dockerfile ./manylinux/docker/"
+      docker-build-args-arm64: "--build-arg POLICY=manylinux_2_31 --build-arg PLATFORM=aarch64 --build-arg BASEIMAGE=nvidia/cuda:12.0.0-devel-ubuntu20.04 --build-arg DEVTOOLSET_ROOTPATH= --build-arg PREPEND_PATH= --build-arg LD_LIBRARY_PATH_ARG= --rm -f ./manylinux/docker/Dockerfile ./manylinux/docker/"
