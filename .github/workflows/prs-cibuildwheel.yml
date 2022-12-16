@@ -1,33 +1,33 @@
-#name: PR CI for cibuildwheel
-#
-#on:
-#  pull_request:
-#    paths:
-#      - 'cibuildwheel/**'
-#      - '.github/workflows/prs-cibuildwheel.yml'
-#
-#concurrency:
-#  group: "${{ github.workflow }}-${{ github.ref }}"
-#  cancel-in-progress: true
-#
-#jobs:
-#  cibuildwheel-ctk118:
-#    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
-#    secrets: inherit
-#    with:
-#      push: true
-#      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04"
-#      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
-#      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
-#      docker-build-args-amd64: "--build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel"
-#      docker-build-args-arm64: "--build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel"
-#  cibuildwheel-ctk12:
-#    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
-#    secrets: inherit
-#    with:
-#      push: true
-#      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04"
-#      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-amd64"
-#      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-arm64"
-#      docker-build-args-amd64: "--build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel"
-#      docker-build-args-arm64: "--build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel"
+name: PR CI for cibuildwheel
+
+on:
+  pull_request:
+    paths:
+      - 'cibuildwheel/**'
+      - '.github/workflows/prs-cibuildwheel.yml'
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  cibuildwheel-ctk118:
+    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
+    secrets: inherit
+    with:
+      push: true
+      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04"
+      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
+      docker-build-amd64: "docker build --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64"
+      docker-build-arm64: "docker build --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64"
+  cibuildwheel-ctk12:
+    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
+    secrets: inherit
+    with:
+      push: true
+      docker-tag-multi: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04"
+      docker-tag-amd64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-amd64"
+      docker-tag-arm64: "rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-arm64"
+      docker-build-amd64: "docker build --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-amd64"
+      docker-build-arm64: "docker build --build-arg CPU_ARCH=arm64 --build-arg BASE_IMAGE=nvidia/cuda:12.0.0-runtime-ubuntu20.04 --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t rapidsai/cibuildwheel:cuda-runtime-12.0.0-ubuntu20.04-arm64"
