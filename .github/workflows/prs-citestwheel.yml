@@ -37,7 +37,7 @@ jobs:
       push: true
       docker-tag-multi: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04"
       docker-tag-amd64: "rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04-amd64"
-      docker-build-amd64: "docker build --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu18.04 --pull ./citestwheel rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04-amd64"
+      docker-build-amd64: "docker build --build-arg CPU_ARCH=amd64 --build-arg BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu18.04 --pull ./citestwheel -t rapidsai/citestwheel:cuda-devel-11.8.0-ubuntu18.04-amd64"
   citestwheel-amd64-ctk12:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-buildx-multiarch
     secrets: inherit
