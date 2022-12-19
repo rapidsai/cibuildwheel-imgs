@@ -175,9 +175,8 @@ jobs:
       - name: Push multiarch manifest
         shell: bash
         run: |
-          amd64_image="${{ needs.docker-build.amd64.outputs.PUSHED }}"
-          arm64_image="${{ needs.docker-build.arm64.outputs.PUSHED }}"
-
+          amd64_image="${{ needs.docker-build-amd64.outputs.PUSHED }}"
+          arm64_image="${{ needs.docker-build-arm64.outputs.PUSHED }}"
 
           multiarch_tag=""
           manifest_create_args=""
