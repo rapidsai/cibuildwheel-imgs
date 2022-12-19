@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 set -eou pipefail
-#set -x
+set -x
 
 image_to_build="${BUILD_IMAGE:-""}"
 
 if [[ "${image_to_build}" == "" ]]; then
-        echo "Must specify BUILD_IMAGE" >2
+        echo "Must specify BUILD_IMAGE" >&2
         exit 1
 fi
 
@@ -21,7 +21,7 @@ arch=$(echo "${img}" | cut -d'-' -f7)
 real_arch=$(uname -m)
 
 if [[ ("$arch" == "amd64" && "$real_arch" != "x86_64") || ("$arch" == "arm64" && "$real_arch" != "aarch64") ]]; then
-        echo "Image arch '${arch}' doesn't match runner arch '${real_arch}'" >2
+        echo "Image arch '${arch}' doesn't match runner arch '${real_arch}'" >&2
         exit 1
 fi
 
@@ -42,7 +42,7 @@ case $img_type in
                 cd -
                 ;;
         *)
-                echo "Unsupported image build '$img_type'" >2
+                echo "Unsupported image build '$img_type'" >&2
                 exit 1
 esac
 
