@@ -35,11 +35,12 @@ case $img_type in
                 docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./citestwheel -t "${image_to_build}" >&2
                 ;;
         "manylinux"*)
-                cd ./manylinux
-                build_policy="${img_type}"
-                COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh >&2 &&\
-                        docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}" >&2
-                cd -
+                # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
+                (cd ./manylinux
+                 build_policy="${img_type}"
+                 COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
+                         docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
+                 cd -) >&2
                 ;;
         *)
                 echo "Unsupported image build '$img_type'" >&2
