@@ -1,0 +1,203 @@
+name: Build docker multiarch images with buildx natively (no QEMU)
+
+on:
+  workflow_call:
+    inputs:
+      docker-build-amd64:
+        required: false
+        type: string
+        default: ''
+      docker-build-arm64:
+        required: false
+        type: string
+        default: ''
+      push:
+        required: false
+        type: boolean
+        default: false
+      submodules:
+        required: false
+        type: string
+        default: 'false'
+
+jobs:
+  compute-arch-builds:
+    name: compute arch builds from inputs
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_AMD64: ${{ steps.compute-builds.outputs.BUILD_AMD64 }}
+      BUILD_ARM64: ${{ steps.compute-builds.outputs.BUILD_ARM64 }}
+    steps:
+      - name: Compute docker builds from inputs
+        shell: bash
+        id: compute-builds
+        run: |
+          if [[ "${{ inputs.docker-build-amd64 }}" != "" ]]; then
+            export BUILD_AMD64=yes
+            echo "BUILD_AMD64=yes" >> "${GITHUB_OUTPUT}"
+          fi
+          if [[ "${{ inputs.docker-build-arm64 }}" != "" ]]; then
+            export BUILD_ARM64=yes
+            echo "BUILD_ARM64=yes" >> "${GITHUB_OUTPUT}"
+          fi
+          if [[ "${BUILD_ARM64}" != "yes" && "${BUILD_AMD64}" != "yes" ]]; then
+            echo "Must specify at least one of amd64, arm64 build commands..." >2
+            exit 1
+          fi
+
+  docker-build-amd64:
+    needs: compute-arch-builds
+    name: docker build amd64
+    if: ${{ needs.compute-arch-builds.outputs.BUILD_AMD64 == 'yes' }}
+    outputs:
+      BUILT: ${{ steps.docker-build.outputs.BUILT }}
+      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: ${{ inputs.submodules }}
+
+      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Context for Buildx
+        id: buildx-context
+        run: docker context create builders
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          endpoint: builders
+
+      - name: Build amd64 container
+        id: docker-build
+        run: |
+          built_image=$(${{ inputs.docker-build-amd64 }})
+          echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
+
+      - name: Push amd64 container to DockerHub (intermediate step)
+        id: docker-push
+        if: ${{ inputs.push }}
+        run: |
+          docker push "${{ steps.docker-build.outputs.BUILT }}"
+          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+
+  docker-build-arm64:
+    needs: compute-arch-builds
+    name: docker build arm64
+    if: ${{ needs.compute-arch-builds.outputs.BUILD_ARM64 == 'yes' }}
+    outputs:
+      BUILT: ${{ steps.docker-build.outputs.BUILT }}
+      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
+    runs-on: [self-hosted, linux, arm64, cpu4] # self-hosted arm runner
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: ${{ inputs.submodules }}
+
+      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Context for Buildx
+        id: buildx-context
+        run: docker context create builders
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          endpoint: builders
+
+      - name: Build arm64 container
+        id: docker-build
+        run: |
+          built_image=$(${{ inputs.docker-build-arm64 }})
+          echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
+
+      - name: Push arm64 container to DockerHub (intermediate step)
+        id: docker-push
+        if: ${{ inputs.push }}
+        run: |
+          docker push "${{ steps.docker-build.outputs.BUILT }}"
+          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+
+  docker-push-multiarch:
+    name: assemble and push multiarch manifest
+    needs: [docker-build-amd64, docker-build-arm64]
+    if: |
+      always() && inputs.push &&
+      (
+        (needs.docker-build-amd64.result == 'success' && 
+          (needs.docker-build-arm64.result == 'success' || needs.docker-build-arm64.result == 'skipped')) ||
+        (needs.docker-build-arm64.result == 'success' && 
+          (needs.docker-build-amd64.result == 'success' || needs.docker-build-amd64.result == 'skipped'))
+      )
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      DOCKER_BUILDKIT: 1
+    steps:
+      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Context for Buildx
+        id: buildx-context
+        run: docker context create builders
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          endpoint: builders
+
+      - name: Push multiarch manifest
+        shell: bash
+        run: |
+          amd64_image="${{ needs.docker-build-amd64.outputs.PUSHED }}"
+          arm64_image="${{ needs.docker-build-arm64.outputs.PUSHED }}"
+
+          multiarch_tag=""
+          manifest_create_args=""
+          if [[ "${amd64_image}"  != "" ]]; then
+            manifest_create_args+=" --amend ${amd64_image}"
+            multiarch_tag=$(echo ${amd64_image//-amd64/})
+          fi
+
+          if [[ "${arm64_image}"  != "" ]]; then
+            if [[ "${multiarch_tag}" != "" ]]; then
+              multiarch_tag_arm=$(echo ${arm64_image//-arm64/})
+              if [[ "${multiarch_tag_arm}" != "${multiarch_tag}" ]]; then
+                echo "Multiarch tag constructed from amd64 arm64 separately ('${multiarch_tag}', '${multiarch_tag_arm}') don't match">2
+                exit 1
+              fi
+            else
+              multiarch_tag=$(echo ${arm64_image//-arm64/})
+            fi
+
+            manifest_create_args+=" --amend ${arm64_image}"
+          fi
+
+          docker manifest create "${multiarch_tag}" ${manifest_create_args}
+          docker manifest push "${multiarch_tag}"

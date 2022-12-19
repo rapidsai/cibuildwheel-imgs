@@ -1,0 +1,4 @@
+[submodule "manylinux"]
+	path = manylinux
+	url = https://github.com/rapidsai/manylinux
+	branch = rapidsai-manylinux
