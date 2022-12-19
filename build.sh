@@ -29,16 +29,16 @@ base_image="nvidia/cuda:${cuda_ver}-${cuda_type}-${os}"
 
 case $img_type in
         "cibuildwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t "${image_to_build}"
+                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t "${image_to_build}" >&2
                 ;;
         "citestwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./citestwheel -t "${image_to_build}"
+                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./citestwheel -t "${image_to_build}" >&2
                 ;;
         "manylinux"*)
                 cd ./manylinux
                 build_policy="${img_type}"
-                COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
-                        docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
+                COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh >&2 &&\
+                        docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}" >&2
                 cd -
                 ;;
         *)
