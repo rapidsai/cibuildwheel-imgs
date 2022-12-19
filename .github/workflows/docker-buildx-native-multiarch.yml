@@ -33,9 +33,11 @@ jobs:
         id: compute-builds
         run: |
           if [[ "${{ inputs.docker-build-amd64 }}" != "" ]]; then
+            export BUILD_AMD64=yes
             echo "BUILD_AMD64=yes" >> "${GITHUB_OUTPUT}"
           fi
           if [[ "${{ inputs.docker-build-arm64 }}" != "" ]]; then
+            export BUILD_ARM64=yes
             echo "BUILD_ARM64=yes" >> "${GITHUB_OUTPUT}"
           fi
           if [[ "${BUILD_ARM64}" != "yes" && "${BUILD_AMD64}" != "yes" ]]; then
