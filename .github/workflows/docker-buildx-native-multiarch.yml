@@ -51,7 +51,7 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_AMD64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED: ${{ steps.docker-build.outputs.PUSHED }}
+      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
     runs-on: ubuntu-latest
     env:
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
@@ -98,7 +98,7 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_ARM64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED: ${{ steps.docker-build.outputs.PUSHED }}
+      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
     runs-on: [self-hosted, linux, arm64, cpu4] # self-hosted arm runner
     env:
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
