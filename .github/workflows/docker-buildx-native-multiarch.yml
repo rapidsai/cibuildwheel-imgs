@@ -192,6 +192,7 @@ jobs:
                 echo "Multiarch tag constructed from amd64 arm64 separately ('${multiarch_tag}', '${multiarch_tag_arm}') don't match">2
                 exit 1
               fi
+            fi
 
             manifest_create_args+=" --amend ${arm64_image}"
           fi
