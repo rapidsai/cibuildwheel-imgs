@@ -83,7 +83,7 @@ jobs:
         id: docker-build
         run: |
           built_image=$(${{ inputs.docker-build-amd64 }})
-          echo "BUILT=${build_image}" >> "${GITHUB_OUTPUT}"
+          echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
       - name: Push amd64 container to DockerHub (intermediate step)
         id: docker-push
@@ -130,14 +130,14 @@ jobs:
         id: docker-build
         run: |
           built_image=$(${{ inputs.docker-build-arm64 }})
-          echo "BUILT=${built_image}" >> "${GITHUB_OUTPUTS}"
+          echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
       - name: Push arm64 container to DockerHub (intermediate step)
         id: docker-push
         if: ${{ inputs.push }}
         run: |
           docker push "${{ steps.docker-build.outputs.BUILT }}"
-          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUTS}"
+          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
 
   docker-push-multiarch:
     name: assemble and push multiarch manifest
