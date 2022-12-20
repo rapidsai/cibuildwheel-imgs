@@ -9,7 +9,7 @@ ENV PYENV_ROOT="/pyenv" \
 RUN apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends \
-        wget curl git jq \
+        wget curl git jq ssh \
         make build-essential libssl-dev zlib1g-dev \
         libbz2-dev libreadline-dev libsqlite3-dev wget \
         curl llvm libncursesw5-dev xz-utils tk-dev \
@@ -29,10 +29,12 @@ RUN pyenv update \
     && pyenv install ${PY39_VERSION} \
     && pyenv install ${PY310_VERSION}
 
+ARG CIBUILDWHEEL_VERSION=2.11.3
+
 # set up each python version
-RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine &&\
-        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine &&\
-        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine
+RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
+        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
+        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
 # make cp39 default
 RUN pyenv global ${PY39_VERSION} && python --version
