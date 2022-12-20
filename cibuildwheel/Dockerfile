@@ -15,25 +15,32 @@ RUN apt-get update \
         curl llvm libncursesw5-dev xz-utils tk-dev \
         libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
+# for pyenv
+ARG PY38_VERSION="3.8.16"
+ARG PY39_VERSION="3.9.16"
+ARG PY310_VERSION="3.10.9"
+
 # Install pyenv
 RUN curl https://pyenv.run | bash
 
-# Create pyenvs for 3.8 and 3.9
+# Create pyenvs
 RUN pyenv update \
-    && pyenv install 3.8.15 \
-    && pyenv install 3.9.15
+    && pyenv install ${PY38_VERSION} \
+    && pyenv install ${PY39_VERSION} \
+    && pyenv install ${PY310_VERSION}
 
 ARG CIBUILDWHEEL_VERSION=2.8.0
 
 # set up each python version
-RUN /pyenv/versions/3.8.15/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
-        /pyenv/versions/3.9.15/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
+RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
+        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
+        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
-# make cp38 default
-RUN pyenv global 3.8.15 && python --version
+# make cp39 default
+RUN pyenv global ${PY39_VERSION} && python --version
 
 # add bin to path
-ENV PATH="/pyenv/versions/3.8.15/bin/:/pyenv/versions/3.9.15/bin/:$PATH"
+ENV PATH="/pyenv/versions/${PY38_VERSION}/bin/:/pyenv/versions/${PY39_VERSION}/bin/:$PATH:/pyenv/versions/${PY310_VERSION}/bin/:$PATH"
 
 # install docker-in-docker
 RUN apt-get update && apt-get install -y \
