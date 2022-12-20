@@ -30,9 +30,9 @@ RUN pyenv update \
     && pyenv install ${PY310_VERSION}
 
 # set up each python version
-RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
-        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
-        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
+RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine &&\
+        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine &&\
+        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine
 
 # make cp39 default
 RUN pyenv global ${PY39_VERSION} && python --version
