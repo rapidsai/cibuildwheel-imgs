@@ -29,10 +29,10 @@ base_image="nvidia/cuda:${cuda_ver}-${cuda_type}-${os}"
 
 case $img_type in
         "cibuildwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --build-arg CIBUILDWHEEL_VERSION=2.8.0 --pull ./cibuildwheel -t "${image_to_build}" >&2
+                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
         "citestwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./citestwheel -t "${image_to_build}" >&2
+                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
         "manylinux"*)
                 # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
