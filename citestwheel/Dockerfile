@@ -20,6 +20,9 @@ ARG PY38_VERSION="3.8.16"
 ARG PY39_VERSION="3.9.16"
 ARG PY310_VERSION="3.10.9"
 
+# Install pyenv
+RUN curl https://pyenv.run | bash
+
 # Create pyenvs
 RUN pyenv update \
     && pyenv install ${PY38_VERSION} \
