@@ -1,6 +1,6 @@
 # cibuildwheel-imgs
 
-This repository contains all images used to build RAPIDS pip wheel releases: <https://rapids.ai/pip>.
+This repository contains all images used to build [RAPIDS pip wheel](https://rapids.ai/pip) releases.
 
 * `cibuildwheel` images are for:
     * Launching cibuildwheel (which launch manylinux containers)
