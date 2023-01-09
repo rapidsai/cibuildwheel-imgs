@@ -36,8 +36,6 @@ RUN pyenv virtualenv ${PY310_VERSION} citools
 RUN eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" &&\
         pyenv activate citools && python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
-RUN find / -type d -name 'citools'
-
 # make cp38 default
 RUN pyenv global ${PY38_VERSION} && python --version
 
