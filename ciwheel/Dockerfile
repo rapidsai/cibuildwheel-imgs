@@ -31,16 +31,18 @@ RUN pyenv update \
 
 ARG CIBUILDWHEEL_VERSION=2.11.3
 
-# set up each python version
-RUN /pyenv/versions/${PY38_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
-        /pyenv/versions/${PY39_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION} &&\
-        /pyenv/versions/${PY310_VERSION}/bin/python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
+RUN pyenv virtualenv ${PY310_VERSION} citools
 
-# make cp39 default
-RUN pyenv global ${PY39_VERSION} && python --version
+RUN eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" &&\
+        pyenv activate citools && python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
+
+RUN find / -type d -name 'citools'
+
+# make cp38 default
+RUN pyenv global ${PY38_VERSION} && python --version
 
 # add bin to path
-ENV PATH="/pyenv/versions/${PY38_VERSION}/bin/:/pyenv/versions/${PY39_VERSION}/bin/:$PATH:/pyenv/versions/${PY310_VERSION}/bin/:$PATH"
+ENV PATH="/pyenv/versions/${PY38_VERSION}/bin/:/pyenv/versions/${PY39_VERSION}/bin/:$/pyenv/versions/${PY310_VERSION}/bin/:/pyenv/versions/citools/bin/:$PATH"
 
 # install docker-in-docker
 RUN apt-get update && apt-get install -y \
