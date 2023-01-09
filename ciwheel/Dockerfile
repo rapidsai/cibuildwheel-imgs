@@ -36,11 +36,17 @@ RUN pyenv virtualenv ${PY310_VERSION} citools
 RUN eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" &&\
         pyenv activate citools && python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
 
+# Create symlinks of aws/cibuildwheel/twine into isolated dir
+RUN mkdir -p /citools-bin &&\
+        ln -snf /pyenv/versions/citools/bin/aws /citools-bin/aws &&\
+        ln -snf /pyenv/versions/citools/bin/twine /citools-bin/twine &&\
+        ln -snf /pyenv/versions/citools/bin/cibuildwheel /citools-bin/cibuildwheel
+
 # make cp38 default
 RUN pyenv global ${PY38_VERSION} && python --version
 
 # add bin to path
-ENV PATH="/pyenv/versions/citools/bin/:$PATH"
+ENV PATH="/citools-bin/:$PATH"
 
 # install docker-in-docker
 RUN apt-get update && apt-get install -y \
