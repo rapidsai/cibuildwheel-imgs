@@ -37,7 +37,7 @@ jobs:
       docker-build-amd64: "BUILD_IMAGE=rapidsai/manylinux2014:cuda-devel-11.5.1-centos7-amd64 ./build.sh"
 
   # arm64 builds on ubuntu20.04
-   manylinux_2_31-arm64-ctk115:
+  manylinux_2_31-arm64-ctk115:
     uses: ./.github/workflows/docker-buildx-native-multiarch.yml
     secrets: inherit
     with:
