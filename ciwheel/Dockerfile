@@ -46,7 +46,7 @@ RUN mkdir -p /citools-bin &&\
 RUN pyenv global ${PY38_VERSION} && python --version
 
 # add bin to path
-ENV PATH="/citools-bin/:$PATH"
+ENV PATH="/pyenv/versions/${PY38_VERSION}/bin/:/pyenv/versions/${PY39_VERSION}/bin/:$/pyenv/versions/${PY310_VERSION}/bin/:/citools-bin/:$PATH"
 
 # install docker-in-docker
 RUN apt-get update && apt-get install -y \
