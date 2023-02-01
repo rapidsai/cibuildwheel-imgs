@@ -54,34 +54,43 @@ jobs:
   #    push: true
   #    docker-build-amd64: "BUILD_IMAGE=rapidsai/citestwheel:cuda-devel-12.0.0-ubuntu18.04-amd64 ./build.sh"
 
-  # amd64 manylinux builds on centos7
-  manylinux2014-amd64-ctk118:
-    uses: ./.github/workflows/docker-buildx-native-multiarch.yml
-    secrets: inherit
-    with:
-      push: true
-      submodules: 'recursive'
-      docker-build-amd64: "BUILD_IMAGE=rapidsai/manylinux2014:cuda-devel-11.8.0-centos7-amd64 ./build.sh"
-  manylinux2014-amd64-ctk120:
-    uses: ./.github/workflows/docker-buildx-native-multiarch.yml
-    secrets: inherit
-    with:
-      push: true
-      submodules: 'recursive'
-      docker-build-amd64: "BUILD_IMAGE=rapidsai/manylinux2014:cuda-devel-12.0.0-centos7-amd64 ./build.sh"
+  ## amd64 manylinux builds on centos7
+  #manylinux2014-amd64-ctk118:
+  #  uses: ./.github/workflows/docker-buildx-native-multiarch.yml
+  #  secrets: inherit
+  #  with:
+  #    push: true
+  #    submodules: 'recursive'
+  #    docker-build-amd64: "BUILD_IMAGE=rapidsai/manylinux2014:cuda-devel-11.8.0-centos7-amd64 ./build.sh"
+  #manylinux2014-amd64-ctk120:
+  #  uses: ./.github/workflows/docker-buildx-native-multiarch.yml
+  #  secrets: inherit
+  #  with:
+  #    push: true
+  #    submodules: 'recursive'
+  #    docker-build-amd64: "BUILD_IMAGE=rapidsai/manylinux2014:cuda-devel-12.0.0-centos7-amd64 ./build.sh"
 
-  # arm64 builds on ubuntu20.04
-  manylinux_2_31-arm64-ctk118:
+  ## arm64 builds on ubuntu20.04
+  #manylinux_2_31-arm64-ctk118:
+  #  uses: ./.github/workflows/docker-buildx-native-multiarch.yml
+  #  secrets: inherit
+  #  with:
+  #    push: true
+  #    submodules: 'recursive'
+  #    docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda-devel-11.8.0-ubuntu20.04-arm64 ./build.sh"
+  #manylinux_2_31-arm64-ctk120:
+  #  uses: ./.github/workflows/docker-buildx-native-multiarch.yml
+  #  secrets: inherit
+  #  with:
+  #    push: true
+  #    submodules: 'recursive'
+  #    docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda-devel-12.0.0-ubuntu20.04-arm64 ./build.sh"
+
+  # arm64-jetson builds on ubuntu20.04
+  manylinux_2_31-arm64-jetson-ctk118:
     uses: ./.github/workflows/docker-buildx-native-multiarch.yml
     secrets: inherit
     with:
       push: true
       submodules: 'recursive'
-      docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda-devel-11.8.0-ubuntu20.04-arm64 ./build.sh"
-  manylinux_2_31-arm64-ctk120:
-    uses: ./.github/workflows/docker-buildx-native-multiarch.yml
-    secrets: inherit
-    with:
-      push: true
-      submodules: 'recursive'
-      docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda-devel-12.0.0-ubuntu20.04-arm64 ./build.sh"
+      docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda_l4t-devel-11.8.0-ubuntu20.04-arm64 ./build.sh"

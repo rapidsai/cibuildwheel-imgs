@@ -13,6 +13,13 @@ fi
 # chop it up for informational purposes
 img=$(echo "${image_to_build}" | tr "/:" "-")
 
+cuda_variant=$(echo "${img}" | cut -d'-' -f1)
+
+jetson="no"
+if [[ "${cuda_variant}" == *"l4t"* ]]; then
+        jetson="yes"
+fi
+
 img_type=$(echo "${img}" | cut -d'-' -f2)
 cuda_type=$(echo "${img}" | cut -d'-' -f4)
 cuda_ver=$(echo "${img}" | cut -d'-' -f5)
@@ -38,8 +45,14 @@ case $img_type in
                 # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
                 (cd ./manylinux
                  build_policy="${img_type}"
-                 COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
-                         docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
+                 if [[ "${jetson}" == "yes" ]]; then
+                         docker build -f "jetson/Dockerfile-118" -t "jetson-base" .
+                         COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="jetson-base" ./build.sh &&\
+                                 docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
+                 else
+                         COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
+                                 docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
+                 fi
                  cd -) >&2
                 ;;
         *)
