@@ -13,7 +13,7 @@ fi
 # chop it up for informational purposes
 img=$(echo "${image_to_build}" | tr "/:" "-")
 
-cuda_variant=$(echo "${img}" | cut -d'-' -f1)
+cuda_variant=$(echo "${img}" | cut -d'-' -f3)
 
 jetson="no"
 if [[ "${cuda_variant}" == *"l4t"* ]]; then
