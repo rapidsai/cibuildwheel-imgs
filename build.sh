@@ -46,7 +46,7 @@ case $img_type in
                 (cd ./manylinux
                  build_policy="${img_type}"
                  if [[ "${jetson}" == "yes" ]]; then
-                         docker build -f "jetson/Dockerfile-118" -t "jetson-base" .
+                         docker build -f "../jetson/Dockerfile-118" -t "jetson-base" .
                          COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="jetson-base" ./build.sh &&\
                                  docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
                  else
