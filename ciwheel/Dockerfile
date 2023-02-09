@@ -74,6 +74,9 @@ RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-c
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - \
   | tar -xz -C /usr/local/bin
 
+# patch rapids-twine for broken release
+COPY rapids-twine /usr/local/bin/rapids-twine
+
 # git safe directory
 RUN git config --system --add safe.directory '*'
 
