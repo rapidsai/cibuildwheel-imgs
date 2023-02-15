@@ -1,0 +1,21 @@
+name: Build manylinux jetson/l4t images
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  # arm64-jetson builds on ubuntu20.04
+  manylinux_2_31-arm64-jetson-ctk118:
+    uses: ./.github/workflows/docker-buildx-native-multiarch.yml
+    secrets: inherit
+    with:
+      push: true
+      submodules: 'recursive'
+      docker-build-arm64: "BUILD_IMAGE=rapidsai/manylinux_2_31:cuda_l4t-devel-11.8.0-ubuntu20.04-arm64 ./build.sh"
