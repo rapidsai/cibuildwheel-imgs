@@ -50,7 +50,7 @@ case $img_type in
                          MANYLINUX_BUILD_FRONTEND="docker" COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="jetson-base" ./build.sh &&\
                                  docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
                  else
-                         COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
+                         MANYLINUX_BUILD_FRONTEND="docker" COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
                                  docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
                  fi
                  cd -) >&2
