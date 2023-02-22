@@ -13,16 +13,15 @@ Current images:
 
 | Image | Label | x86_64 | aarch64 |
 | :- | :- | :- | :- |
-| rapidsai/cibuildwheel | cuda-runtime-12.0.0-ubuntu20.04 | :heavy_check_mark: | :heavy_check_mark: |
-|  | cuda-runtime-11.8.0-ubuntu20.04 | :heavy_check_mark: | :heavy_check_mark: |
-| rapidsai/manylinux_2_31 | cuda-devel-12.0.0-ubuntu20.04 |  | :heavy_check_mark: |
+| rapidsai/cibuildwheel | cuda-runtime-11.8.0-ubuntu20.04 | :heavy_check_mark: | :heavy_check_mark: |
+| rapidsai/manylinux_2_31 | cuda-devel-12.0.1-ubuntu20.04 |  | :heavy_check_mark: |
 |  | cuda-devel-11.8.0-ubuntu20.04 |  | :heavy_check_mark: |
-| rapidsai/manylinux2014 | cuda-devel-12.0.0-centos7 | :heavy_check_mark: | |
+| rapidsai/manylinux2014 | cuda-devel-12.0.1-centos7 | :heavy_check_mark: | |
 |  | cuda-devel-11.8.0-centos7 | :heavy_check_mark: | |
 | rapidsai/citestwheel | cuda-devel-11.8.0-ubuntu18.04 | :heavy_check_mark: | |
-|  | cuda-devel-12.0.0-ubuntu18.04 | :heavy_check_mark: | |
+|  | cuda-devel-12.0.1-ubuntu18.04 | :heavy_check_mark: | |
 |  | cuda-devel-11.8.0-ubuntu20.04 | | :heavy_check_mark: |
-|  | cuda-devel-12.0.0-ubuntu20.04 | | :heavy_check_mark: |
+|  | cuda-devel-12.0.1-ubuntu20.04 | | :heavy_check_mark: |
 
 Legacy images (no longer rebuilt, used for 22.10, 22.12):
 
