@@ -19,9 +19,9 @@ jobs:
     secrets: inherit
     with:
       build_type: branch
+      push: true
       docker-build-amd64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64 ./build.sh"
       docker-build-arm64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64 ./build.sh"
-      push: true
 
   # arm64 tests run on ubuntu20.04 due to being built on ubuntu20.04 i.e. manylinux_2_31
   #citestwheel-arm64-ctk118:
