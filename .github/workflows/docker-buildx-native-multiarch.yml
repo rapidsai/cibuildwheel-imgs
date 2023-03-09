@@ -87,6 +87,8 @@ jobs:
 
       - name: Download and untar gha-tools from sevag's fork
         run: |
+          set -x
+          pip install awscli
           git clone https://github.com/sevagh/gha-tools ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
@@ -141,6 +143,8 @@ jobs:
 
       - name: Download and untar gha-tools from sevag's fork
         run: |
+          set -x
+          pip install awscli
           git clone https://github.com/sevagh/gha-tools ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
@@ -208,6 +212,8 @@ jobs:
 
       - name: Download and untar gha-tools from sevag's fork
         run: |
+          set -x
+          pip install awscli
           git clone https://github.com/sevagh/gha-tools ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
