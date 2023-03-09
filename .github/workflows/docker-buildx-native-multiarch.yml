@@ -64,7 +64,6 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_AMD64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED_TO_S3: ${{ steps.s3-push.outputs.PUSHED_TO_S3 }}
     runs-on: ubuntu-latest
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
@@ -89,7 +88,7 @@ jobs:
         run: |
           set -x
           pip install awscli
-          git clone https://github.com/sevagh/gha-tools ./gha-tools
+          git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
 
@@ -109,10 +108,7 @@ jobs:
           echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
       - name: Push amd64 container to rapids-downloads bucket
-        id: s3-push
-        run: |
-          rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
-          echo "PUSHED_TO_S3=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+        run: rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
 
   docker-build-arm64:
     needs: compute-arch-builds
@@ -120,7 +116,6 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_ARM64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED_TO_S3: ${{ steps.s3-push.outputs.PUSHED_TO_S3 }}
     runs-on: [self-hosted, linux, arm64, cpu4] # self-hosted arm runner
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
@@ -145,7 +140,7 @@ jobs:
         run: |
           set -x
           pip install awscli
-          git clone https://github.com/sevagh/gha-tools ./gha-tools
+          git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
 
@@ -165,10 +160,7 @@ jobs:
           echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
       - name: Push arm64 container to rapids-downloads bucket
-        id: s3-push
-        run: |
-          rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
-          echo "PUSHED_TO_S3=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+        run: rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
 
   docker-push-multiarch:
     name: assemble and push multiarch manifest
@@ -214,7 +206,7 @@ jobs:
         run: |
           set -x
           pip install awscli
-          git clone https://github.com/sevagh/gha-tools ./gha-tools
+          git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
 
@@ -230,8 +222,8 @@ jobs:
       - name: Push multiarch manifest
         shell: bash
         run: |
-          amd64_image="${{ needs.docker-build-amd64.outputs.PUSHED }}"
-          arm64_image="${{ needs.docker-build-arm64.outputs.PUSHED }}"
+          amd64_image="${{ needs.docker-build-amd64.outputs.BUILT }}"
+          arm64_image="${{ needs.docker-build-arm64.outputs.BUILT }}"
 
           multiarch_tag=""
           manifest_create_args=""
