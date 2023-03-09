@@ -3,6 +3,19 @@ name: Build docker multiarch images with buildx natively (no QEMU)
 on:
   workflow_call:
     inputs:
+      # repo and branch
+      repo:
+        type: string
+      branch:
+        type: string
+      date:
+        type: string
+      sha:
+        type: string
+      build_type:
+        required: true
+        type: string
+
       docker-build-amd64:
         required: false
         type: string
@@ -51,11 +64,12 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_AMD64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
+      PUSHED_TO_S3: ${{ steps.s3-push.outputs.PUSHED_TO_S3 }}
     runs-on: ubuntu-latest
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
-      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKER_BUILDKIT: 1
     steps:
       - name: Checkout
@@ -63,12 +77,13 @@ jobs:
         with:
           submodules: ${{ inputs.submodules }}
 
-      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
-        name: Login to DockerHub
-        uses: docker/login-action@v2
+      - name: Standardize repository information
+        uses: rapidsai/shared-action-workflows/rapids-github-info@branch-23.04
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ env.DOCKERHUB_TOKEN }}
+          repo: ${{ inputs.repo }}
+          branch: ${{ inputs.branch }}
+          date: ${{ inputs.date }}
+          sha: ${{ inputs.sha }}
 
       - name: Set up Docker Context for Buildx
         id: buildx-context
@@ -85,12 +100,18 @@ jobs:
           built_image=$(${{ inputs.docker-build-amd64 }})
           echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
-      - name: Push amd64 container to DockerHub (intermediate step)
-        id: docker-push
-        if: ${{ inputs.push }}
+      - name: Download and untar gha-tools from sevag's fork
         run: |
-          docker push "${{ steps.docker-build.outputs.BUILT }}"
-          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+          apt-get update -y && apt-get install git
+          git clone https://github.com/sevagh/gha-tools ./gha-tools
+          chmod +x ./gha-tools/tools/*
+          cp ./gha-tools/tools/* /usr/bin/
+
+      - name: Push amd64 container to rapids-downloads bucket
+        id: s3-push
+        run: |
+          rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
+          echo "PUSHED_TO_S3=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
 
   docker-build-arm64:
     needs: compute-arch-builds
@@ -98,11 +119,12 @@ jobs:
     if: ${{ needs.compute-arch-builds.outputs.BUILD_ARM64 == 'yes' }}
     outputs:
       BUILT: ${{ steps.docker-build.outputs.BUILT }}
-      PUSHED: ${{ steps.docker-push.outputs.PUSHED }}
+      PUSHED_TO_S3: ${{ steps.s3-push.outputs.PUSHED_TO_S3 }}
     runs-on: [self-hosted, linux, arm64, cpu4] # self-hosted arm runner
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
-      DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKER_BUILDKIT: 1
     steps:
       - name: Checkout
@@ -110,12 +132,13 @@ jobs:
         with:
           submodules: ${{ inputs.submodules }}
 
-      - if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != '' }}
-        name: Login to DockerHub
-        uses: docker/login-action@v2
+      - name: Standardize repository information
+        uses: rapidsai/shared-action-workflows/rapids-github-info@branch-23.04
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ env.DOCKERHUB_TOKEN }}
+          repo: ${{ inputs.repo }}
+          branch: ${{ inputs.branch }}
+          date: ${{ inputs.date }}
+          sha: ${{ inputs.sha }}
 
       - name: Set up Docker Context for Buildx
         id: buildx-context
@@ -132,12 +155,18 @@ jobs:
           built_image=$(${{ inputs.docker-build-arm64 }})
           echo "BUILT=${built_image}" >> "${GITHUB_OUTPUT}"
 
-      - name: Push arm64 container to DockerHub (intermediate step)
-        id: docker-push
-        if: ${{ inputs.push }}
+      - name: Download and untar gha-tools from sevag's fork
         run: |
-          docker push "${{ steps.docker-build.outputs.BUILT }}"
-          echo "PUSHED=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
+          apt-get update -y && apt-get install git
+          git clone https://github.com/sevagh/gha-tools ./gha-tools
+          chmod +x ./gha-tools/tools/*
+          cp ./gha-tools/tools/* /usr/bin/
+
+      - name: Push arm64 container to rapids-downloads bucket
+        id: s3-push
+        run: |
+          rapids-upload-docker-to-s3 "${{ steps.docker-build.outputs.BUILT }}"
+          echo "PUSHED_TO_S3=${{ steps.docker-build.outputs.BUILT }}" >> "${GITHUB_OUTPUT}"
 
   docker-push-multiarch:
     name: assemble and push multiarch manifest
@@ -152,6 +181,9 @@ jobs:
       )
     runs-on: ubuntu-latest
     env:
+      RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
       DOCKER_BUILDKIT: 1
@@ -162,6 +194,19 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: ${{ inputs.submodules }}
+
+      - name: Standardize repository information
+        uses: rapidsai/shared-action-workflows/rapids-github-info@branch-23.04
+        with:
+          repo: ${{ inputs.repo }}
+          branch: ${{ inputs.branch }}
+          date: ${{ inputs.date }}
+          sha: ${{ inputs.sha }}
 
       - name: Set up Docker Context for Buildx
         id: buildx-context
@@ -181,11 +226,13 @@ jobs:
           multiarch_tag=""
           manifest_create_args=""
           if [[ "${amd64_image}"  != "" ]]; then
+            rapids-download-docker-from-s3 "${amd64_image}"
             manifest_create_args+=" --amend ${amd64_image}"
             multiarch_tag=$(echo ${amd64_image//-amd64/})
           fi
 
           if [[ "${arm64_image}"  != "" ]]; then
+            rapids-download-docker-from-s3 "${arm64_image}"
             if [[ "${multiarch_tag}" != "" ]]; then
               multiarch_tag_arm=$(echo ${arm64_image//-arm64/})
               if [[ "${multiarch_tag_arm}" != "${multiarch_tag}" ]]; then
