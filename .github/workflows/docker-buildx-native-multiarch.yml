@@ -33,6 +33,21 @@ on:
         type: string
         default: 'false'
 
+permissions:
+  actions: none
+  checks: none
+  contents: read
+  deployments: none
+  discussions: none
+  id-token: write
+  issues: none
+  packages: read
+  pages: none
+  pull-requests: read
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   compute-arch-builds:
     name: compute arch builds from inputs
@@ -69,7 +84,8 @@ jobs:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
       DOCKER_BUILDKIT: 1
     steps:
-      - name: aws-actions/configure-aws-credentials@v1-node16
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
@@ -125,7 +141,8 @@ jobs:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
       DOCKER_BUILDKIT: 1
     steps:
-      - name: aws-actions/configure-aws-credentials@v1-node16
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
@@ -195,7 +212,8 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
 
-      - name: aws-actions/configure-aws-credentials@v1-node16
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
