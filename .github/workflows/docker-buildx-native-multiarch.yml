@@ -67,10 +67,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKER_BUILDKIT: 1
     steps:
+      - name: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 43200 # 12h
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -119,10 +123,14 @@ jobs:
     runs-on: [self-hosted, linux, arm64, cpu4] # self-hosted arm runner
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKER_BUILDKIT: 1
     steps:
+      - name: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 43200 # 12h
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -168,16 +176,14 @@ jobs:
     if: |
       always() && inputs.push &&
       (
-        (needs.docker-build-amd64.result == 'success' && 
+        (needs.docker-build-amd64.result == 'success' &&
           (needs.docker-build-arm64.result == 'success' || needs.docker-build-arm64.result == 'skipped')) ||
-        (needs.docker-build-arm64.result == 'success' && 
+        (needs.docker-build-arm64.result == 'success' &&
           (needs.docker-build-amd64.result == 'success' || needs.docker-build-amd64.result == 'skipped'))
       )
     runs-on: ubuntu-latest
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.RAPIDSAI_GHA_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.RAPIDSAI_GHA_AWS_SECRET_ACCESS_KEY }}
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
       DOCKER_BUILDKIT: 1
@@ -188,6 +194,12 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 43200 # 12h
 
       - name: Checkout
         uses: actions/checkout@v3
