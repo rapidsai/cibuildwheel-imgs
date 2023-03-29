@@ -246,7 +246,6 @@ jobs:
           manifests_to_push=$(rapids-docker-multiarch-from-s3)
           echo "MANIFESTS_TO_PUSH=${manifests_to_push}" >> "${GITHUB_OUTPUT}"
       - name: Push multiarch manifests from s3
-        if: push
         run: |
           for manifest in ${{ steps.manifests-create.outputs.MANIFESTS_TO_PUSH }}; do
             echo "pushing manifest: ${manifest}"
