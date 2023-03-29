@@ -22,15 +22,7 @@ jobs:
       build_type: branch
       docker-build-amd64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-amd64 ./build.sh"
       docker-build-arm64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-11.8.0-ubuntu20.04-arm64 ./build.sh"
-  cibuildwheel-ctk120:
-    uses: ./.github/workflows/docker-buildx-native-multiarch.yml
-    secrets: inherit
-    with:
-      push: true
-      build_type: branch
-      docker-build-amd64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-12.0.1-ubuntu20.04-amd64 ./build.sh"
-      docker-build-arm64: "BUILD_IMAGE=rapidsai/cibuildwheel:cuda-runtime-12.0.1-ubuntu20.04-arm64 ./build.sh"
-
+  
   # arm64 tests run on ubuntu20.04 due to being built on ubuntu20.04 i.e. manylinux_2_31
   #citestwheel-arm64-ctk118:
   #  uses: ./.github/workflows/docker-buildx-native-multiarch.yml
