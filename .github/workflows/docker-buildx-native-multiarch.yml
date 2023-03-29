@@ -235,7 +235,7 @@ jobs:
       - name: Download and untar gha-tools
         run: |
           set -x
-          sudo apt-get update -y && sudo apt-get install -y awscli git
+          sudo apt-get update -y && sudo apt-get install -y awscli git skopeo
           git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
           chmod +x ./gha-tools/tools/*
           sudo cp ./gha-tools/tools/* /usr/bin/
@@ -248,6 +248,6 @@ jobs:
       - name: Push multiarch manifests from s3
         run: |
           for manifest in ${{ steps.manifests-create.outputs.MANIFESTS_TO_PUSH }}; do
-            echo "pushing multiarch manifest: ${manifest}"
-            docker manifest push "${manifest}"
+            echo "copying multiarch manifest: ${manifest}"
+            skopeo copy "docker://localhost:5000/${manifest}" "docker://docker.io/${manifest}"
           done
