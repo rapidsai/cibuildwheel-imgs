@@ -247,7 +247,8 @@ jobs:
           echo "MANIFESTS_TO_PUSH=${manifests_to_push}" >> "${GITHUB_OUTPUT}"
       - name: Push multiarch manifests from s3
         run: |
+          set -x
           for manifest in ${{ steps.manifests-create.outputs.MANIFESTS_TO_PUSH }}; do
-            echo "copying multiarch manifest: ${manifest}"
+            echo "copying multiarch manifest with skopeo: ${manifest}"
             skopeo copy "docker://localhost:5000/${manifest}" "docker://docker.io/${manifest}"
           done
