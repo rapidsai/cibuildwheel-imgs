@@ -248,6 +248,6 @@ jobs:
       - name: Push multiarch manifests from s3
         run: |
           for manifest in ${{ steps.manifests-create.outputs.MANIFESTS_TO_PUSH }}; do
-            echo "pushing manifest: ${manifest}"
+            echo "pushing multiarch manifest: ${manifest}"
             docker manifest push "${manifest}"
           done
