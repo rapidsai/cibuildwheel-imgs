@@ -66,6 +66,3 @@ case $img_type in
                 echo "Unsupported image build '$img_type'" >&2
                 exit 1
 esac
-
-# script output is the image (name+tag) that was built
-echo -n "${image_to_build}"

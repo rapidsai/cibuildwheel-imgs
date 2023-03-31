@@ -88,8 +88,9 @@ jobs:
           endpoint: builders
       - name: Build and upload container
         run: |
-          built_image=$(BUILD_IMAGE="${{ matrix.build_image }}-$(uname -m)" ./build.sh)
-          rapids-upload-docker-to-s3 "${built_image}"
+          image_to_build="${{ matrix.build_image }}-$(uname -m)"
+          BUILD_IMAGE=${image_to_build} ./build.sh
+          rapids-upload-docker-to-s3 "${image_to_build}"
   docker-assemble-push-multiarch:
     name: assemble and push multiarch manifest
     needs: docker-build-arch
