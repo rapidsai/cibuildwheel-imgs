@@ -27,19 +27,26 @@ os=$(echo "${img}" | cut -d'-' -f6)
 arch=$(echo "${img}" | cut -d'-' -f7)
 real_arch=$(uname -m)
 
-if [[ ("$arch" == "amd64" && "$real_arch" != "x86_64") || ("$arch" == "arm64" && "$real_arch" != "aarch64") ]]; then
+if [[ ("$arch" != "$real_arch") ]]; then
         echo "Image arch '${arch}' doesn't match runner arch '${real_arch}'" >&2
         exit 1
+fi
+
+cpu_arch=""
+if [[ "$real_arch" == "x86_64" ]]; then
+        cpu_arch="amd64"
+elif [[ "$real_arch" == "aarch64" ]]; then
+        cpu_arch="arm64"
 fi
 
 base_image="nvidia/cuda:${cuda_ver}-${cuda_type}-${os}"
 
 case $img_type in
         "cibuildwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
+                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
         "citestwheel")
-                docker build --build-arg CPU_ARCH="${arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
+                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
         "manylinux"*)
                 # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
