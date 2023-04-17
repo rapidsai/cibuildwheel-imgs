@@ -3,7 +3,6 @@ name: Build docker multiarch images with buildx natively (no QEMU)
 on:
   workflow_call:
     inputs:
-      # repo and branch
       repo:
         type: string
       branch:
