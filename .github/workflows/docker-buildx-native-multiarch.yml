@@ -133,7 +133,7 @@ jobs:
         run: |
           set -x
           sudo apt-get update -y && sudo apt-get install -y awscli git wget
-          wget https://github.com/lework/skopeo-binary/releases/latest/download/skopeo-linux-amd64 -O ./skopeo
+          wget https://github.com/rapidsai/skopeo/releases/download/v1.12/skopeo-linux-amd64 -O ./skopeo
           chmod +x ./skopeo && sudo cp ./skopeo /usr/bin/
           git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
           chmod +x ./gha-tools/tools/*
