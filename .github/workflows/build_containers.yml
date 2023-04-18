@@ -11,13 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cibw-containers:
-    uses: ./.github/workflows/docker-multiarch-native.yml
-    secrets: inherit
-    with:
-      matrix_script: "./ci/compute-cibw-matrix.sh"
-      push: true
-      build_type: branch
+  #cibw-containers:
+  #  uses: ./.github/workflows/docker-multiarch-native.yml
+  #  secrets: inherit
+  #  with:
+  #    matrix_script: "./ci/compute-cibw-matrix.sh"
+  #    push: true
+  #    build_type: branch
   manylinux-containers:
     uses: ./.github/workflows/docker-multiarch-native.yml
     secrets: inherit

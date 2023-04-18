@@ -3,6 +3,8 @@
 set -eou pipefail
 set -x
 
+curl --verbose https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm --output ./dummy && echo $? && ls -latrh dummy
+
 image_to_build="${BUILD_IMAGE:-""}"
 
 if [[ "${image_to_build}" == "" ]]; then
