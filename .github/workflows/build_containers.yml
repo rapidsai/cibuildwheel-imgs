@@ -12,14 +12,14 @@ concurrency:
 
 jobs:
   cibw-containers:
-    uses: rapidsai/shared-action-workflows/.github/workflows/docker-multiarch-native.yml@feat/docker-multiarch-native
+    uses: .github/workflows/docker-multiarch-native.yml
     secrets: inherit
     with:
       matrix_script: "./ci/compute-cibw-matrix.sh"
       push: true
       build_type: branch
   manylinux-containers:
-    uses: rapidsai/shared-action-workflows/.github/workflows/docker-multiarch-native.yml@feat/docker-multiarch-native
+    uses: .github/workflows/docker-multiarch-native.yml
     secrets: inherit
     with:
       matrix_script: "./ci/compute-manylinux-matrix.sh"
