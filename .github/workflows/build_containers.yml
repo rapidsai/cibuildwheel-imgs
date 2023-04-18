@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   all-containers:
-    uses: rapidsai/shared-action-workflows/.github/workflows/docker-buildx-native-multiarch.yml@feat/docker-multiarch-native
+    uses: rapidsai/shared-action-workflows/.github/workflows/docker-multiarch-native.yml@feat/docker-multiarch-native
     secrets: inherit
     with:
       push: true
