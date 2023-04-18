@@ -11,9 +11,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  all-containers:
+  cibw-containers:
     uses: rapidsai/shared-action-workflows/.github/workflows/docker-multiarch-native.yml@feat/docker-multiarch-native
     secrets: inherit
     with:
+      matrix_script: "./ci/compute-cibw-matrix.sh"
+      push: true
+      build_type: branch
+  manylinux-containers:
+    uses: rapidsai/shared-action-workflows/.github/workflows/docker-multiarch-native.yml@feat/docker-multiarch-native
+    secrets: inherit
+    with:
+      matrix_script: "./ci/compute-manylinux-matrix.sh"
       push: true
       build_type: branch
