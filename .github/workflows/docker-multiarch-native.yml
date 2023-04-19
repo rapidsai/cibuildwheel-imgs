@@ -56,7 +56,7 @@ jobs:
     needs: compute-matrix
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
-    runs-on: ${{ fromJSON(matrix.runner_arch != 'arm64' && '"ubuntu-latest"' || '{"labels":["self-hosted", "linux", "arm64", "cpu4"]}') }}
+    runs-on: ${{ fromJSON(matrix.runner_arch != 'arm64' && '"ubuntu-latest"' || '"linux-arm64-cpu4"') }}
     env:
       RAPIDS_BUILD_TYPE: ${{ inputs.build_type }}
       DOCKER_BUILDKIT: 1
@@ -101,7 +101,7 @@ jobs:
     name: assemble and push multiarch manifest
     needs: docker-build-arch
     if: inputs.push
-    runs-on: ubuntu-latest
+    runs-on: "linux-amd64-cpu4"
     env:
       DOCKERHUB_USERNAME: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
