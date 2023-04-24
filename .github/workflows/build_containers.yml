@@ -1,6 +1,8 @@
 name: Build RAPIDS pip wheel CI images
 
 on:
+  pull-request:
+
   push:
     branches:
       - "main"
