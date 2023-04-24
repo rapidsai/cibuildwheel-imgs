@@ -16,7 +16,6 @@ RUN apt-get update \
         libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 # for pyenv
-ARG PY38_VERSION="3.8.16"
 ARG PY39_VERSION="3.9.16"
 ARG PY310_VERSION="3.10.9"
 
@@ -25,7 +24,6 @@ RUN curl https://pyenv.run | bash
 
 # Create pyenvs
 RUN pyenv update \
-    && pyenv install ${PY38_VERSION} \
     && pyenv install ${PY39_VERSION} \
     && pyenv install ${PY310_VERSION}
 
@@ -42,11 +40,11 @@ RUN mkdir -p /citools-bin &&\
         ln -snf /pyenv/versions/citools/bin/twine /citools-bin/twine &&\
         ln -snf /pyenv/versions/citools/bin/cibuildwheel /citools-bin/cibuildwheel
 
-# make cp38 default
-RUN pyenv global ${PY38_VERSION} && python --version
+# make cp39 default
+RUN pyenv global ${PY39_VERSION} && python --version
 
 # add bin to path
-ENV PATH="/pyenv/versions/${PY38_VERSION}/bin/:/pyenv/versions/${PY39_VERSION}/bin/:$/pyenv/versions/${PY310_VERSION}/bin/:/citools-bin/:$PATH"
+ENV PATH="/pyenv/versions/${PY39_VERSION}/bin/:$/pyenv/versions/${PY310_VERSION}/bin/:/citools-bin/:$PATH"
 
 # install docker-in-docker
 RUN apt-get update && apt-get install -y \
