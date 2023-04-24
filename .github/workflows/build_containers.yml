@@ -1,11 +1,10 @@
 name: Build RAPIDS pip wheel CI images
 
 on:
-  pull_request:
-
   push:
     branches:
       - "main"
+	  - "pull-request/[0-9]+"
   workflow_dispatch:
 
 concurrency:
