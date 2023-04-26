@@ -1,0 +1,20 @@
+name: Build RAPIDS pip wheel CI images
+
+on:
+  push:
+    branches:
+      - "feat/manylinux_v2"
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  manylinux-v2-containers:
+    uses: ./.github/workflows/docker-multiarch-native.yml
+    secrets: inherit
+    with:
+      matrix_script: "./ci/compute-manylinux_v2-matrix.sh"
+      push: true
+      build_type: branch
