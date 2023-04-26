@@ -1,11 +1,9 @@
-name: Build RAPIDS pip wheel CI images
+name: PR build of RAPIDS pip wheel CI images
 
 on:
   push:
     branches:
-      - "main"
       - "pull-request/[0-9]+"
-  workflow_dispatch:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -17,5 +15,5 @@ jobs:
     secrets: inherit
     with:
       matrix_script: "./ci/compute-matrix.sh"
-      push: true
+      push: false
       build_type: branch

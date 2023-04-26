@@ -1,0 +1,20 @@
+name: Build and push RAPIDS pip wheel CI images
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  cibw-containers:
+    uses: ./.github/workflows/docker-multiarch-native.yml
+    secrets: inherit
+    with:
+      matrix_script: "./ci/compute-matrix.sh"
+      push: true
+      build_type: branch
