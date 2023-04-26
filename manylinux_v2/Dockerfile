@@ -82,6 +82,6 @@ RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf
 RUN scl enable devtoolset-11 bash
 
 # Install latest gha-tools
-wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
+RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
 
 CMD ["/bin/bash"]
