@@ -8,6 +8,9 @@ ENV PYENV_ROOT="/pyenv" \
 
 RUN yum update -y && yum install -y wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool patchelf && yum clean all
 
+# Install latest git (needs a separate repo
+RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git && yum remove -y endpoint-repo
+
 # Install latest openssl (can't use the package manager because CentOS 7 stopped after openssl 1.0)
 RUN pushd tmp && \
     wget https://ftp.openssl.org/source/openssl-1.1.1k.tar.gz && \
