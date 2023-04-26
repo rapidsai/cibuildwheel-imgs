@@ -48,6 +48,9 @@ case $img_type in
         "citestwheel")
                 docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
+        "manylinux_v2"*)
+                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./manylinux_v2 -t "${image_to_build}" >&2
+                ;;
         "manylinux"*)
                 # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
                 (cd ./manylinux
