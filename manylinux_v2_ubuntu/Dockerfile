@@ -1,6 +1,5 @@
 ARG BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu18.04
 FROM ${BASE_IMAGE}
-SHELL ["/bin/bash", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
