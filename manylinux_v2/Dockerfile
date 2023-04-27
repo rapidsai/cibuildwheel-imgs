@@ -68,14 +68,10 @@ RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbo
 
 RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY310_VERSION}
 
-# TODO: Will this also install a newer glibc? If it does, may need to install
-# the compiler from source instead. It seems to be OK based on what auditwheel
-# now reports, but may merit some extra checking
 RUN yum update -y && yum install -y centos-release-scl scl-utils && yum clean all
 
-# TODO: For some reason combining devtoolset-11 with the above line causes it
-# to not be found. I suspect that it needs centos-release-scl to already exist
-# on the system
+# Combining devtoolset-11 with the above line causes it to not be found. I
+# suspect that it needs centos-release-scl to already exist on the system
 RUN yum update -y && yum install -y devtoolset-11 && yum clean all
 
 RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
