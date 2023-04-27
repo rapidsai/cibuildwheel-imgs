@@ -31,11 +31,8 @@ RUN if [ "ON_CENTOS" ] ; then pushd tmp && \
 
 # Install sccache
 ARG SCCACHE_VERSION=0.4.2
-# TODO: The below should be conditional
-ARG ARCH="x86_64"
-#ARG ARCH="aarch64"
 
-RUN curl -o /tmp/sccache.tar.gz \
+RUN if [ "ON_CENTOS" ] ; then ARCH="x86_64" ; else ARCH="aarch64" ; fi; curl -o /tmp/sccache.tar.gz \
         -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl.tar.gz" && \
         tar -C /tmp -xvf /tmp/sccache.tar.gz && \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
