@@ -82,7 +82,10 @@ RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf
 
 RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf
 
-RUN scl enable devtoolset-11 bash
+RUN echo -e '\
+#!/bin/bash\n\
+source scl_source enable devtoolset-11\n\
+' > /etc/profile.d/enable_devtools.sh
 
 # Install latest gha-tools
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
