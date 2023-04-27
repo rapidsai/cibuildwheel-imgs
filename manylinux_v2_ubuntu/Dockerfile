@@ -25,7 +25,7 @@ RUN curl -o /tmp/sccache.tar.gz \
 
 # Install ucx
 ARG UCX_VERSION=1.13.0
-RUN mkdir -p /ucx-src && pushd /ucx-src &&\
+RUN mkdir -p /ucx-src && cd /ucx-src &&\
     git clone https://github.com/openucx/ucx -b v${UCX_VERSION} ucx-git-repo &&\
     cd ucx-git-repo && \
     ./autogen.sh && \
@@ -41,7 +41,7 @@ RUN mkdir -p /ucx-src && pushd /ucx-src &&\
        --with-cuda=/usr/local/cuda && \
     CPPFLAGS=-I/usr/local/cuda/include make -j && \
     make install && \
-    popd && \
+    cd / && \
     rm -rf /ucx-src/
 
 # for pyenv
@@ -68,11 +68,11 @@ RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf t
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
 
 # Install the AWS CLI
-RUN mkdir -p /aws_install && pushd /aws_install && \
+RUN mkdir -p /aws_install && cd /aws_install && \
     curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && \
     unzip awscli-bundle.zip && \
     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
-    popd && \
+    cd / && \
     rm -rf /aws_install
 
 # Mark all directories as safe for git so that GHA clones into the root don't
