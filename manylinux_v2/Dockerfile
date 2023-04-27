@@ -78,9 +78,9 @@ RUN yum update -y && yum install -y centos-release-scl scl-utils && yum clean al
 # on the system
 RUN yum update -y && yum install -y devtoolset-11 && yum clean all
 
-RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf
+RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
 
-RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf
+RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine
 
 RUN echo -e '\
 #!/bin/bash\n\
