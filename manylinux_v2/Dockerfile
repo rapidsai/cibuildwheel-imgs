@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
-RUN yum update -y && yum install -y wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool patchelf && yum clean all
+RUN yum update -y && yum install -y wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool && yum clean all
 
 # Install latest git (needs a separate repo
 RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git && yum remove -y endpoint-repo
