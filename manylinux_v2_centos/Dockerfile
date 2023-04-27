@@ -1,39 +1,29 @@
 ARG BASE_IMAGE=nvidia/cuda:11.8.0-devel-centos7
-#arm: ARG BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu18.04
 FROM ${BASE_IMAGE}
-SHELL ["/bin/bash", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
-RUN command -v yum &> /dev/null; ON_CENTOS=$?
+RUN yum update -y && yum install -y wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool && yum clean all
 
-# TODO: Probably better to avoid the conditional for caching layers
-RUN if [ "ON_CENTOS" ] ; then yum update -y && yum install -y wget gcc centos-release-scl scl-utils zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool && yum clean all ; else apt update -y && apt install -y build-essential software-properties-common wget gcc zlib1g-dev libbz2-dev libssl-dev libreadline-dev libsqlite3-dev libffi-dev curl git libncurses5-dev libnuma-dev openssh-client libcudnn8-dev zip libopenblas-dev liblapack-dev protobuf-compiler autoconf automake libtool && rm -rf /var/lib/apt/lists/* ; fi
-
-# Install latest git and compilers (needs a separate repo)
-RUN if [ "ON_CENTOS" ] ; then yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git devtoolset-11 && yum remove -y endpoint-repo && yum clean all ; else add-apt-repository ppa:git-core/ppa && add-apt-repository ppa:ubuntu-toolchain-r/test && apt update -y && apt install -y git gcc-11 g++-11 && add-apt-repository -r ppa:git-core/ppa && add-apt-repository -r ppa:ubuntu-toolchain-r/test ; fi
-
-RUN if [ ! "ON_CENTOS" ] ; then update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 90 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 ; fi
+# Install latest git (needs a separate repo
+RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git && yum remove -y endpoint-repo
 
 # Install latest openssl (can't use the package manager because CentOS 7 stopped after openssl 1.0)
-RUN if [ "ON_CENTOS" ] ; then pushd tmp && \
+RUN pushd tmp && \
     wget https://ftp.openssl.org/source/openssl-1.1.1k.tar.gz && \
     tar -xzvf openssl-1.1.1k.tar.gz &&\
     cd openssl-1.1.1k && \
     ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib no-shared zlib-dynamic && \
     make && \
     make install && \
-    popd \
-    fi
+    popd
 
 # Install sccache
 ARG SCCACHE_VERSION=0.4.2
-# TODO: The below should be conditional
 ARG ARCH="x86_64"
-#ARG ARCH="aarch64"
 
 RUN curl -o /tmp/sccache.tar.gz \
         -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl.tar.gz" && \
@@ -74,18 +64,24 @@ RUN curl https://pyenv.run | bash
 RUN pyenv update
 
 # Need to specify the openssl location because of the install from source
-RUN if [ "ON_CENTOS" ] ; then CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY39_VERSION}; else pyenv install --verbose ${PY39_VERSION}; fi
+RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY39_VERSION}
 
-RUN if [ "ON_CENTOS" ] ; then CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY10_VERSION}; else pyenv install --verbose ${PY310_VERSION}; fi
+RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY310_VERSION}
+
+RUN yum update -y && yum install -y centos-release-scl scl-utils && yum clean all
+
+# Combining devtoolset-11 with the above line causes it to not be found. I
+# suspect that it needs centos-release-scl to already exist on the system
+RUN yum update -y && yum install -y devtoolset-11 && yum clean all
 
 RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
 
 RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine
 
-RUN if [ "ON_CENTOS" ] ; then echo -e '\
+RUN echo -e '\
 #!/bin/bash\n\
 source scl_source enable devtoolset-11\n\
-' > /etc/profile.d/enable_devtools.sh fi
+' > /etc/profile.d/enable_devtools.sh
 
 # Install latest gha-tools
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
