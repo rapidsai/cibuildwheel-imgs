@@ -98,4 +98,8 @@ RUN mkdir -p /aws_install && pushd /aws_install && \
     popd && \
     rm -rf /aws_install
 
+# Mark all directories as safe for git so that GHA clones into the root don't
+# run into issues
+RUN git config --system --add safe.directory '*'
+
 CMD ["/bin/bash"]
