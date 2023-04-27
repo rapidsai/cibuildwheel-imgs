@@ -90,4 +90,12 @@ source scl_source enable devtoolset-11\n\
 # Install latest gha-tools
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
 
+# Install the AWS CLI
+RUN mkdir -p /aws_install && pushd /aws_install && \
+    curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && \
+    unzip awscli-bundle.zip && \
+    ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
+    popd && \
+    rm -rf /aws_install
+
 CMD ["/bin/bash"]
