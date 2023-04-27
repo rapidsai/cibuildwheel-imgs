@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
-RUN command -v yum &> /dev/null; ON_CENTOS=$?
+RUN if [[ "${BASE_IMAGE}" == *"centos"* ]]; then ON_CENTOS=1; else ON_CENTOS=0; fi
 
 # TODO: Probably better to avoid the conditional for caching layers
 RUN if [ "ON_CENTOS" ] ; then yum update -y && yum install -y wget gcc centos-release-scl scl-utils zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool && yum clean all ; else apt update -y && apt install -y build-essential software-properties-common wget gcc zlib1g-dev libbz2-dev libssl-dev libreadline-dev libsqlite3-dev libffi-dev curl git libncurses5-dev libnuma-dev openssh-client libcudnn8-dev zip libopenblas-dev liblapack-dev protobuf-compiler autoconf automake libtool && rm -rf /var/lib/apt/lists/* ; fi
