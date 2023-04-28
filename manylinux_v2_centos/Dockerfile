@@ -6,10 +6,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
-RUN yum update -y && yum install -y wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool && yum clean all
+RUN yum update -y && yum install -y epel-release wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool centos-release-scl scl-utils && yum clean all
 
-# Install latest git (needs a separate repo
-RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git && yum remove -y endpoint-repo
+# Install tools that have to be installed after the previous install completes.
+RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git jq devtoolset-11 && yum remove -y endpoint-repo
 
 # Install latest openssl (can't use the package manager because CentOS 7 stopped after openssl 1.0)
 RUN pushd tmp && \
@@ -67,12 +67,6 @@ RUN pyenv update
 RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY39_VERSION}
 
 RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY310_VERSION}
-
-RUN yum update -y && yum install -y centos-release-scl scl-utils && yum clean all
-
-# Combining devtoolset-11 with the above line causes it to not be found. I
-# suspect that it needs centos-release-scl to already exist on the system
-RUN yum update -y && yum install -y devtoolset-11 && yum clean all
 
 RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
 
