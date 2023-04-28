@@ -78,13 +78,11 @@ jobs:
           branch: ${{ inputs.branch }}
           date: ${{ inputs.date }}
           sha: ${{ inputs.sha }}
-      - name: Download and untar gha-tools from sevag's fork
+      - name: Install latest gha-tools
         run: |
           set -x
-          sudo apt-get update -y && sudo apt-get install -y awscli git
-          git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
-          chmod +x ./gha-tools/tools/*
-          sudo cp ./gha-tools/tools/* /usr/bin/
+          sudo apt-get update -y && sudo apt-get install -y awscli wget
+          wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | sudo tar -xz -C /usr/local/bin
       - name: Set up Docker Context for Buildx
         id: buildx-context
         run: docker context create builders
@@ -140,15 +138,13 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
-      - name: Download and untar gha-tools
+      - name: Install latest gha-tools and skopeo
         run: |
           set -x
-          sudo apt-get update -y && sudo apt-get install -y awscli git wget
+          sudo apt-get update -y && sudo apt-get install -y awscli wget
+          wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | sudo tar -xz -C /usr/local/bin
           wget https://github.com/rapidsai/skopeo/releases/download/v1.12/skopeo-linux-amd64 -O ./skopeo
-          chmod +x ./skopeo && sudo cp ./skopeo /usr/bin/
-          git clone https://github.com/sevagh/gha-tools -b feat/docker-s3 ./gha-tools
-          chmod +x ./gha-tools/tools/*
-          sudo cp ./gha-tools/tools/* /usr/bin/
+          chmod +x ./skopeo && sudo cp ./skopeo /usr/local/bin/
       - name: Assemble multiarch manifest from s3
         id: manifests-create
         run: |

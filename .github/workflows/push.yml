@@ -1,4 +1,4 @@
-name: Build RAPIDS pip wheel CI images
+name: Build and push RAPIDS pip wheel CI images
 
 on:
   push:
@@ -15,13 +15,6 @@ jobs:
     uses: ./.github/workflows/docker-multiarch-native.yml
     secrets: inherit
     with:
-      matrix_script: "./ci/compute-cibw-matrix.sh"
-      push: true
-      build_type: branch
-  manylinux-containers:
-    uses: ./.github/workflows/docker-multiarch-native.yml
-    secrets: inherit
-    with:
-      matrix_script: "./ci/compute-manylinux-matrix.sh"
+      matrix_script: "./ci/compute-matrix.sh"
       push: true
       build_type: branch
