@@ -59,9 +59,9 @@ RUN pyenv install --verbose ${PY39_VERSION}
 
 RUN pyenv install --verbose ${PY310_VERSION}
 
-RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
+RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
 
-RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine
+RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
 
 # Install latest gha-tools
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
