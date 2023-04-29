@@ -68,9 +68,9 @@ RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbo
 
 RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY310_VERSION}
 
-RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine
+RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
 
-RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine
+RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
 
 RUN echo -e '\
 #!/bin/bash\n\
