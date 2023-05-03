@@ -23,3 +23,7 @@ exclude:
     RUNNER_ARCH: "arm64"
   - BUILD_IMAGE: "rapidsai/manylinux_v2_2_31:cuda-devel-11.8.0-ubuntu20.04"
     RUNNER_ARCH: "amd64"
+  - BUILD_IMAGE: "rapidsai/manylinux_v2_2014:cuda-devel-12.0.1-centos7"
+    RUNNER_ARCH: "arm64"
+  - BUILD_IMAGE: "rapidsai/manylinux_v2_2_31:cuda-devel-12.0.1-ubuntu20.04"
+    RUNNER_ARCH: "amd64"
