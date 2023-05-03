@@ -42,25 +42,15 @@ fi
 base_image="nvidia/cuda:${cuda_ver}-${cuda_type}-${os}"
 
 case $img_type in
-        "cibuildwheel")
-                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
-                ;;
         "citestwheel")
                 docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
-        "manylinux"*)
-                # run in a subshell to redirect all of the innner manylinux/build.sh script wholesale
-                (cd ./manylinux
-                 build_policy="${img_type}"
-                 if [[ "${jetson}" == "yes" ]]; then
-                         docker build -f "../jetson/Dockerfile-118" -t "jetson-base" .
-                         MANYLINUX_BUILD_FRONTEND="docker" COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="jetson-base" ./build.sh &&\
-                                 docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
-                 else
-                         MANYLINUX_BUILD_FRONTEND="docker" COMMIT_SHA=latest POLICY="${build_policy}" PLATFORM="${real_arch}" BASEIMAGE_OVERRIDE="${base_image}" ./build.sh &&\
-                                 docker tag "quay.io/pypa/${build_policy}_${real_arch}" "${image_to_build}"
-                 fi
-                 cd -) >&2
+        "manylinux_v2"*)
+                if [[ ("$os" == *"centos"*) ]]; then
+                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./manylinux_v2_centos -t "${image_to_build}" >&2
+                else
+                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./manylinux_v2_ubuntu -t "${image_to_build}" >&2
+                fi
                 ;;
         *)
                 echo "Unsupported image build '$img_type'" >&2
