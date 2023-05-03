@@ -19,8 +19,7 @@ RUN pushd tmp && \
     ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib no-shared zlib-dynamic && \
     make && \
     make install && \
-    popd && \
-    rm -rf tmp
+    popd
 
 # Install sccache
 ARG SCCACHE_VERSION=0.4.2
@@ -30,7 +29,6 @@ RUN curl -o /tmp/sccache.tar.gz \
         -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl.tar.gz" && \
         tar -C /tmp -xvf /tmp/sccache.tar.gz && \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
-        rm /tmp/sccache.tar.gz && \
         chmod +x /usr/bin/sccache
 
 # Install ucx
