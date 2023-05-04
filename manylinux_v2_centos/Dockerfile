@@ -32,10 +32,12 @@ RUN curl -o /tmp/sccache.tar.gz \
         chmod +x /usr/bin/sccache
 
 # Install ucx
-ARG UCX_VERSION=1.13.0
+ARG UCX_VERSION=1.14.0
 RUN mkdir -p /ucx-src && pushd /ucx-src &&\
     git clone https://github.com/openucx/ucx -b v${UCX_VERSION} ucx-git-repo &&\
     cd ucx-git-repo && \
+    curl https://raw.githubusercontent.com/pentschev/ucx-split-feedstock/cuda-12-nvidia-channel/recipe/cuda12.patch > cuda12.patch && \
+    git apply cuda12.patch && \
     ./autogen.sh && \
     ./contrib/configure-release \
        --prefix=/usr               \
