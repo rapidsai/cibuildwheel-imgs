@@ -31,13 +31,13 @@ RUN curl -o /tmp/sccache.tar.gz \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
         chmod +x /usr/bin/sccache
 
-# Install ucx
+# Install ucx and apply patch for CUDA 12
+COPY cuda12.patch /ucx_cuda12_patch/cuda12.patch
 ARG UCX_VERSION=1.14.0
 RUN mkdir -p /ucx-src && pushd /ucx-src &&\
     git clone https://github.com/openucx/ucx -b v${UCX_VERSION} ucx-git-repo &&\
     cd ucx-git-repo && \
-    curl https://raw.githubusercontent.com/pentschev/ucx-split-feedstock/cuda-12-nvidia-channel/recipe/cuda12.patch > cuda12.patch && \
-    git apply cuda12.patch && \
+    git apply /ucx_cuda12_patch/cuda12.patch && \
     ./autogen.sh && \
     ./contrib/configure-release \
        --prefix=/usr               \
@@ -52,7 +52,8 @@ RUN mkdir -p /ucx-src && pushd /ucx-src &&\
     CPPFLAGS=-I/usr/local/cuda/include make -j && \
     make install && \
     popd && \
-    rm -rf /ucx-src/
+    rm -rf /ucx-src/ && \
+    rm -rf /ucx_cuda12_patch/
 
 # for pyenv
 ARG PY39_VERSION="3.9.16"
