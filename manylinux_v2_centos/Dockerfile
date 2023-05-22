@@ -31,6 +31,10 @@ RUN curl -o /tmp/sccache.tar.gz \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
         chmod +x /usr/bin/sccache
 
+# Set AUDITWHEEL_*
+ARG POLICY=manylinux_2_17
+ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${ARCH} AUDITWHEEL_PLAT=${POLICY}_${ARCH}
+
 # Install ucx
 ARG UCX_VERSION=1.14.1
 RUN mkdir -p /ucx-src && pushd /ucx-src &&\
