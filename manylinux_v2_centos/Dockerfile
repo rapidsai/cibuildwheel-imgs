@@ -22,7 +22,7 @@ RUN pushd tmp && \
     popd
 
 # Install sccache
-ARG SCCACHE_VERSION=0.4.2
+ARG SCCACHE_VERSION=0.5.0
 ARG ARCH="x86_64"
 
 RUN curl -o /tmp/sccache.tar.gz \
