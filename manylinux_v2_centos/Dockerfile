@@ -22,7 +22,7 @@ RUN pushd tmp && \
     popd
 
 # Install sccache
-ARG SCCACHE_VERSION=0.4.2
+ARG SCCACHE_VERSION=0.5.0
 ARG ARCH="x86_64"
 
 RUN curl -o /tmp/sccache.tar.gz \
@@ -30,6 +30,15 @@ RUN curl -o /tmp/sccache.tar.gz \
         tar -C /tmp -xvf /tmp/sccache.tar.gz && \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
         chmod +x /usr/bin/sccache
+
+ENV CMAKE_CUDA_COMPILER_LAUNCHER=sccache
+ENV CMAKE_CXX_COMPILER_LAUNCHER=sccache
+ENV CMAKE_C_COMPILER_LAUNCHER=sccache
+ENV SCCACHE_BUCKET=rapids-sccache-east
+ENV SCCACHE_REGION=us-east-2
+ENV SCCACHE_IDLE_TIMEOUT=32768
+ENV SCCACHE_S3_USE_SSL=true
+ENV SCCACHE_S3_NO_CREDENTIALS=false
 
 # Install ucx
 ARG UCX_VERSION=1.14.1
