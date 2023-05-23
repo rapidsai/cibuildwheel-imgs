@@ -22,6 +22,15 @@ RUN curl -o /tmp/sccache.tar.gz \
         mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
         chmod +x /usr/bin/sccache
 
+ENV CMAKE_CUDA_COMPILER_LAUNCHER=sccache
+ENV CMAKE_CXX_COMPILER_LAUNCHER=sccache
+ENV CMAKE_C_COMPILER_LAUNCHER=sccache
+ENV SCCACHE_BUCKET=rapids-sccache-east
+ENV SCCACHE_REGION=us-east-2
+ENV SCCACHE_IDLE_TIMEOUT=32768
+ENV SCCACHE_S3_USE_SSL=true
+ENV SCCACHE_S3_NO_CREDENTIALS=false
+
 # Install ucx
 ARG UCX_VERSION=1.14.1
 RUN mkdir -p /ucx-src && cd /ucx-src &&\
