@@ -56,8 +56,8 @@ jobs:
         if: 
         uses: docker/build-push-action@v4
         with:
-          context: ./{{ inputs.IMAGE_REPO }}
-          file: ./{{ inputs.IMAGE_REPO }}/Dockerfile
+          context: ./${{ inputs.IMAGE_REPO }}
+          file: ./${{ inputs.IMAGE_REPO }}/Dockerfile
           push: ${{ inputs.BUILD_TYPE == 'branch' }}
           pull: true
           build-args: |
