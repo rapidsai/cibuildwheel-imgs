@@ -15,6 +15,9 @@ on:
       PYTHON_VER:
         required: true
         type: string
+      IMAGE_REPO:
+        required: true
+        type: string
       TAG:
         required: true
         type: string
