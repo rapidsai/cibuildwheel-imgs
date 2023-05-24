@@ -1,7 +1,9 @@
-ARG BASE_IMAGE=nvidia/cuda:11.8.0-devel-ubuntu20.04
+ARG CUDA_VER=11.8.0
+ARG LINUX_VER=ubuntu20.04
+
+ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
 
-ARG CUDA_VER=11.8.0
 ARG PYTHON_VER=3.9.16
 
 ARG DEBIAN_FRONTEND=noninteractive
