@@ -1,7 +1,14 @@
 ARG BASE_IMAGE=nvidia/cuda:11.8.0-devel-centos7
 FROM ${BASE_IMAGE}
 
+ARG CUDA_VER=11.8.0
+ARG PYTHON_VER=3.9
+
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Set RAPIDS versions env variables
+ENV RAPIDS_CUDA_VERSION="${CUDA_VER}"
+ENV RAPIDS_PY_VERSION="${PYTHON_VER}"
 
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
@@ -66,10 +73,6 @@ RUN mkdir -p /ucx-src && pushd /ucx-src &&\
     popd && \
     rm -rf /ucx-src/
 
-# for pyenv
-ARG PY39_VERSION="3.9.16"
-ARG PY310_VERSION="3.10.9"
-
 # Install pyenv
 RUN curl https://pyenv.run | bash
 
@@ -78,13 +81,9 @@ RUN curl https://pyenv.run | bash
 RUN pyenv update
 
 # Need to specify the openssl location because of the install from source
-RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY39_VERSION}
+RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PYTHON_VER}
 
-RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PY310_VERSION}
-
-RUN pyenv global ${PY39_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
-
-RUN pyenv global ${PY310_VERSION} && python -m pip install auditwheel patchelf twine && pyenv rehash
+RUN pyenv global ${PYTHON_VER} && python -m pip install auditwheel patchelf twine && pyenv rehash
 
 RUN echo -e '\
 #!/bin/bash\n\

@@ -24,7 +24,8 @@ img_type=$(echo "${img}" | cut -d'-' -f2)
 cuda_type=$(echo "${img}" | cut -d'-' -f4)
 cuda_ver=$(echo "${img}" | cut -d'-' -f5)
 os=$(echo "${img}" | cut -d'-' -f6)
-arch=$(echo "${img}" | cut -d'-' -f7)
+python_ver=$(echo "${img}" | cut -d'-' -f7)
+arch=$(echo "${img}" | cut -d'-' -f8)
 real_arch=$(uname -m)
 
 if [[ ("$arch" != "$real_arch") ]]; then
@@ -43,13 +44,19 @@ base_image="nvidia/cuda:${cuda_ver}-${cuda_type}-${os}"
 
 case $img_type in
         "citestwheel")
-                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./ciwheel -t "${image_to_build}" >&2
+                docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg CUDA_VER="${cuda_ver}" \
+                        --build-arg PYTHON_VER="${python_ver}" --build-arg BASE_IMAGE="${base_image}" \
+                        --pull ./ciwheel -t "${image_to_build}" >&2
                 ;;
         "manylinux_v2"*)
                 if [[ ("$os" == *"centos"*) ]]; then
-                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./manylinux_v2_centos -t "${image_to_build}" >&2
+                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg CUDA_VER="${cuda_ver}" \
+                        --build-arg PYTHON_VER="${python_ver}" --build-arg BASE_IMAGE="${base_image}" \
+                        --pull ./manylinux_v2_centos -t "${image_to_build}" >&2
                 else
-                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg BASE_IMAGE="${base_image}" --pull ./manylinux_v2_ubuntu -t "${image_to_build}" >&2
+                    docker build --build-arg CPU_ARCH="${cpu_arch}" --build-arg CUDA_VER="${cuda_ver}" \
+                        --build-arg PYTHON_VER="${python_ver}" --build-arg BASE_IMAGE="${base_image}" \
+                        --pull ./manylinux_v2_ubuntu -t "${image_to_build}" >&2
                 fi
                 ;;
         *)
