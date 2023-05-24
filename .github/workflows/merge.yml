@@ -1,0 +1,17 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - "main"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-images:
+    uses: ./.github/workflows/build-and-publish-images.yml
+    with:
+      build_type: branch
+    secrets: inherit
