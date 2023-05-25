@@ -16,5 +16,3 @@ exclude:
     IMAGE_REPO: "ci-wheel"
   - LINUX_VER: "centos7"
     IMAGE_REPO: "citestwheel"
-  - LINUX_VER: "ubuntu20.04"
-    IMAGE_REPO: "citestwheel"
