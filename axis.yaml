@@ -9,7 +9,7 @@ LINUX_VER:
   - "ubuntu20.04"
   - "centos7"
 IMAGE_REPO:
-  - "ciwheel"
+  - "ci-wheel"
   - "citestwheel"
 exclude:
   - LINUX_VER: "ubuntu18.04"
