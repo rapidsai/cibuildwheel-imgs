@@ -4,6 +4,7 @@ ARG LINUX_VER=ubuntu20.04
 ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
 
+ARG LINUX_VER
 ARG PYTHON_VER=3.9
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -98,11 +99,11 @@ RUN pyenv update
 
 RUN case "${LINUX_VER}" in \
     "ubuntu"*) \
-        pyenv install --verbose ${PYTHON_VER} \
+        pyenv install --verbose ${RAPIDS_PY_VERSION} \
       ;; \
     "centos"*) \
         # Need to specify the openssl location because of the install from source
-        CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PYTHON_VER} \
+        CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${RAPIDS_PY_VERSION} \
       ;; \
     *) \
       echo "Unsupported LINUX_VER: ${LINUX_VER}" && exit 1; \
