@@ -1,7 +1,8 @@
 def compute_arch($x):
   ["amd64"] |
   if
-    $x.LINUX_VER != "centos7"
+    $x.LINUX_VER != "centos7" or
+    $x.LINUX_VER != "ubuntu18.04"
   then
     . + ["arm64"]
   else

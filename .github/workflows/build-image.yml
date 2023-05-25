@@ -52,6 +52,11 @@ jobs:
         with:
           driver: docker
           endpoint: builders
+      - name: Get Real Arch
+        id: get-real-arch
+        run: |
+          REAL_ARCH=$(arch)
+          echo "REAL_ARCH=${REAL_ARCH}" >> $GITHUB_OUTPUT
       - name: Build image
         if: 
         uses: docker/build-push-action@v4
@@ -65,4 +70,5 @@ jobs:
             LINUX_VER=${{ inputs.LINUX_VER }}
             PYTHON_VER=${{ inputs.PYTHON_VER }}
             CPU_ARCH=${{ matrix.ARCH }}
+            REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
           tags: ${{ inputs.TAG }}-${{ matrix.ARCH }}

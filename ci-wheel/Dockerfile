@@ -1,10 +1,12 @@
 ARG CUDA_VER=11.8.0
 ARG LINUX_VER=ubuntu20.04
+ARG REAL_ARCH=x86_64
 
 ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
 
 ARG LINUX_VER
+ARG REAL_ARCH
 ARG PYTHON_VER=3.9
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -48,16 +50,14 @@ RUN case "${LINUX_VER}" in \
 # Install sccache
 ARG SCCACHE_VERSION=0.5.0
 
-RUN export ARCH=$(uname -m)
-
 RUN curl -o /tmp/sccache.tar.gz \
-        -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl.tar.gz" && \
+        -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-"${REAL_ARCH}"-unknown-linux-musl.tar.gz" && \
         tar -C /tmp -xvf /tmp/sccache.tar.gz && \
-        mv "/tmp/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl/sccache" /usr/bin/sccache && \
+        mv "/tmp/sccache-v${SCCACHE_VERSION}-"${REAL_ARCH}"-unknown-linux-musl/sccache" /usr/bin/sccache && \
         chmod +x /usr/bin/sccache
 
 # Set AUDITWHEEL_* env vars for use with auditwheel
-ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${ARCH} AUDITWHEEL_PLAT=${POLICY}_${ARCH}
+ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${REAL_ARCH} AUDITWHEEL_PLAT=${POLICY}_${REAL_ARCH}
 
 # Set sccache env vars
 ENV CMAKE_CUDA_COMPILER_LAUNCHER=sccache
@@ -99,11 +99,11 @@ RUN pyenv update
 
 RUN case "${LINUX_VER}" in \
     "ubuntu"*) \
-        pyenv install --verbose ${RAPIDS_PY_VERSION} \
+        pyenv install --verbose "${RAPIDS_PY_VERSION}" \
       ;; \
     "centos"*) \
         # Need to specify the openssl location because of the install from source
-        CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${RAPIDS_PY_VERSION} \
+        CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose "${RAPIDS_PY_VERSION}" \
       ;; \
     *) \
       echo "Unsupported LINUX_VER: ${LINUX_VER}" && exit 1; \
