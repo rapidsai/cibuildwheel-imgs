@@ -1,5 +1,5 @@
 ARG CUDA_VER=11.8.0
-ARG LINUX_VER=centos7
+ARG LINUX_VER=ubuntu20.04
 
 ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
@@ -15,24 +15,39 @@ ENV RAPIDS_PY_VERSION="${PYTHON_VER}"
 ENV PYENV_ROOT="/pyenv" \
     PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
-RUN yum update -y && yum install -y epel-release wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool centos-release-scl scl-utils cmake && yum clean all
-
-# Install tools that have to be installed after the previous install completes.
-RUN yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git jq devtoolset-11 && yum remove -y endpoint-repo
-
-# Install latest openssl (can't use the package manager because CentOS 7 stopped after openssl 1.0)
-RUN pushd tmp && \
-    wget https://ftp.openssl.org/source/openssl-1.1.1k.tar.gz && \
-    tar -xzvf openssl-1.1.1k.tar.gz &&\
-    cd openssl-1.1.1k && \
-    ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib no-shared zlib-dynamic && \
-    make && \
-    make install && \
-    popd
+RUN case "${LINUX_VER}" in \
+    "ubuntu"*) \
+        apt update -y && apt install -y jq build-essential software-properties-common wget gcc zlib1g-dev libbz2-dev libssl-dev libreadline-dev libsqlite3-dev libffi-dev curl git libncurses5-dev libnuma-dev openssh-client libcudnn8-dev zip libopenblas-dev liblapack-dev protobuf-compiler autoconf automake libtool cmake && rm -rf /var/lib/apt/lists/* \
+        && add-apt-repository ppa:git-core/ppa && add-apt-repository ppa:ubuntu-toolchain-r/test && apt update -y && apt install -y git gcc-9 g++-9 && add-apt-repository -r ppa:git-core/ppa && add-apt-repository -r ppa:ubuntu-toolchain-r/test \
+        && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 \
+        && export POLICY=manylinux_2_31 \
+      ;; \
+    "centos"*) \
+        yum update -y && yum install -y epel-release wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool centos-release-scl scl-utils cmake && yum clean all \
+        && yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git jq devtoolset-11 && yum remove -y endpoint-repo \
+        && export POLICY=manylinux_2_17 \
+        && echo -e ' \
+        #!/bin/bash\n \
+        source scl_source enable devtoolset-11\n \
+        ' > /etc/profile.d/enable_devtools.sh \
+        && pushd tmp \
+        && wget https://ftp.openssl.org/source/openssl-1.1.1k.tar.gz \
+        && tar -xzvf openssl-1.1.1k.tar.gz \
+        && cd openssl-1.1.1k \
+        && ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib no-shared zlib-dynamic \
+        && make \
+        && make install \
+        && popd \
+      ;; \
+    *) \
+      echo "Unsupported LINUX_VER: ${LINUX_VER}" && exit 1; \
+      ;; \
+  esac
 
 # Install sccache
 ARG SCCACHE_VERSION=0.5.0
-ARG ARCH="x86_64"
+
+RUN export ARCH=$(uname -m)
 
 RUN curl -o /tmp/sccache.tar.gz \
         -L "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${ARCH}-unknown-linux-musl.tar.gz" && \
@@ -41,7 +56,6 @@ RUN curl -o /tmp/sccache.tar.gz \
         chmod +x /usr/bin/sccache
 
 # Set AUDITWHEEL_* env vars for use with auditwheel
-ARG POLICY=manylinux_2_17
 ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${ARCH} AUDITWHEEL_PLAT=${POLICY}_${ARCH}
 
 # Set sccache env vars
@@ -56,7 +70,7 @@ ENV SCCACHE_S3_NO_CREDENTIALS=false
 
 # Install ucx
 ARG UCX_VERSION=1.14.1
-RUN mkdir -p /ucx-src && pushd /ucx-src &&\
+RUN mkdir -p /ucx-src && cd /ucx-src &&\
     git clone https://github.com/openucx/ucx -b v${UCX_VERSION} ucx-git-repo &&\
     cd ucx-git-repo && \
     ./autogen.sh && \
@@ -72,7 +86,7 @@ RUN mkdir -p /ucx-src && pushd /ucx-src &&\
        --with-cuda=/usr/local/cuda && \
     CPPFLAGS=-I/usr/local/cuda/include make -j && \
     make install && \
-    popd && \
+    cd / && \
     rm -rf /ucx-src/
 
 # Install pyenv
@@ -82,25 +96,30 @@ RUN curl https://pyenv.run | bash
 # TODO: Determine if any cleanup of the pyenv layers is needed to shrink the container
 RUN pyenv update
 
-# Need to specify the openssl location because of the install from source
-RUN CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PYTHON_VER}
+RUN case "${LINUX_VER}" in \
+    "ubuntu"*) \
+        pyenv install --verbose ${PYTHON_VER} \
+      ;; \
+    "centos"*) \
+        # Need to specify the openssl location because of the install from source
+        CPPFLAGS="-I/usr/include/openssl" LDFLAGS="-L/usr/lib" pyenv install --verbose ${PYTHON_VER} \
+      ;; \
+    *) \
+      echo "Unsupported LINUX_VER: ${LINUX_VER}" && exit 1; \
+      ;; \
+  esac
 
 RUN pyenv global ${PYTHON_VER} && python -m pip install auditwheel patchelf twine && pyenv rehash
-
-RUN echo -e '\
-#!/bin/bash\n\
-source scl_source enable devtoolset-11\n\
-' > /etc/profile.d/enable_devtools.sh
 
 # Install latest gha-tools
 RUN wget https://github.com/rapidsai/gha-tools/releases/latest/download/tools.tar.gz -O - | tar -xz -C /usr/local/bin
 
 # Install the AWS CLI
-RUN mkdir -p /aws_install && pushd /aws_install && \
+RUN mkdir -p /aws_install && cd /aws_install && \
     curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && \
     unzip awscli-bundle.zip && \
     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
-    popd && \
+    cd / && \
     rm -rf /aws_install
 
 # Mark all directories as safe for git so that GHA clones into the root don't

@@ -1,4 +1,7 @@
-ARG BASE_IMAGE=nvidia/cuda:11.5.1-devel-ubuntu18.04
+ARG CUDA_VER=11.8.0
+ARG LINUX_VER=ubuntu18.04
+
+ARG BASE_IMAGE=nvidia/cuda:{CUDA_VER}-devel-{LINUX_VER}
 FROM ${BASE_IMAGE}
 
 ARG DEBIAN_FRONTEND=noninteractive
