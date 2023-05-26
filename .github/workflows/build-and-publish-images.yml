@@ -40,7 +40,7 @@ jobs:
       TAG: rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
       BUILD_TYPE: ${{ inputs.build_type }}
   build-multiarch-manifest:
-    # if: inputs.build_type == 'branch'
+    if: inputs.build_type == 'branch'
     needs: [docker, compute-matrix]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
@@ -76,7 +76,7 @@ jobs:
             docker manifest push rapidsai/${{ matrix.IMAGE_REPO }}:latest
           fi
   delete-temp-images:
-    # if: inputs.build_type == 'branch'
+    if: inputs.build_type == 'branch'
     needs: [compute-matrix, build-multiarch-manifest]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
