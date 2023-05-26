@@ -63,7 +63,8 @@ jobs:
         with:
           context: ./${{ inputs.IMAGE_REPO }}
           file: ./${{ inputs.IMAGE_REPO }}/Dockerfile
-          push: ${{ inputs.BUILD_TYPE == 'branch' }}
+          # push: ${{ inputs.BUILD_TYPE == 'branch' }}
+          push: true
           pull: true
           build-args: |
             CUDA_VER=${{ inputs.CUDA_VER }}
