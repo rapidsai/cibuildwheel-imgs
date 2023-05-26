@@ -60,7 +60,7 @@ jobs:
           LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
 
           source_tags=()
-          tag="rapidsai/${{ needs.compute-matrix.outputs.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
+          tag="rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
           for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
             source_tags+=("${tag}-${arch}")
           done
@@ -72,8 +72,8 @@ jobs:
             "${LATEST_CUDA_VER}" == "${{ matrix.CUDA_VER }}" &&
             "${LATEST_PYTHON_VER}" == "${{ matrix.PYTHON_VER }}"
           ]]; then
-            docker manifest create rapidsai/${{ needs.compute-matrix.outputs.IMAGE_REPO }}:latest ${source_tags[@]}
-            docker manifest push rapidsai/${{ needs.compute-matrix.outputs.IMAGE_REPO }}:latest
+            docker manifest create rapidsai/${{ matrix.IMAGE_REPO }}:latest ${source_tags[@]}
+            docker manifest push rapidsai/${{ matrix.IMAGE_REPO }}:latest
           fi
   delete-temp-images:
     # if: inputs.build_type == 'branch'
@@ -92,7 +92,7 @@ jobs:
           )
 
           org="rapidsai"
-          repo="${{ needs.compute-matrix.outputs.IMAGE_REPO }}"
+          repo="${{ matrix.IMAGE_REPO }}"
           tag="cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
 
           for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
