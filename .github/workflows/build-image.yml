@@ -52,11 +52,16 @@ jobs:
         with:
           driver: docker
           endpoint: builders
-      - name: Get Real Arch
+      - name: Get Real Arch and Manylinux Version
         id: get-real-arch
         run: |
           REAL_ARCH=$(arch)
           echo "REAL_ARCH=${REAL_ARCH}" >> $GITHUB_OUTPUT
+          if [[ "${{ inputs.LINUX_VER }}" == "ubuntu20.04" || "${{ inputs.LINUX_VER }}" == "ubuntu18.04" ]]; then
+            echo "MANYLINUX_VER=manylinux_2_31" >> $GITHUB_OUTPUT
+          else
+            echo "MANYLINUX_VER=manylinux_2_17" >> $GITHUB_OUTPUT
+          fi
       - name: Build image
         if: 
         uses: docker/build-push-action@v4
@@ -72,4 +77,5 @@ jobs:
             PYTHON_VER=${{ inputs.PYTHON_VER }}
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
+            MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
           tags: ${{ inputs.TAG }}-${{ matrix.ARCH }}
