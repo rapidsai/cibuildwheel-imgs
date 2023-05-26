@@ -37,7 +37,7 @@ jobs:
       LINUX_VER: ${{ matrix.LINUX_VER }}
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
-      TAG: rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
+      TAG: rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
       BUILD_TYPE: ${{ inputs.build_type }}
   build-multiarch-manifest:
     if: inputs.build_type == 'branch'
@@ -60,7 +60,7 @@ jobs:
           LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
 
           source_tags=()
-          tag="rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
+          tag="rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
           for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
             source_tags+=("${tag}-${arch}")
           done
@@ -93,7 +93,7 @@ jobs:
 
           org="rapidsai"
           repo="${{ matrix.IMAGE_REPO }}"
-          tag="cuda${{ matrix.CUDA_VER }}-base-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
+          tag="cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
 
           for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
             curl -i -X DELETE \
