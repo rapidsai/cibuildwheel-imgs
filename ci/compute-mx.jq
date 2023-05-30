@@ -1,11 +1,11 @@
 def compute_arch($x):
   ["amd64"] |
   if
-    $x.LINUX_VER == "ubuntu20.04"
+    ["ubuntu18.04", "centos7"] | any(index($x.LINUX_VER))
   then
-    . + ["arm64"]
-  else
     .
+  else
+    . + ["arm64"]
   end |
   $x + {ARCHES: .};
 

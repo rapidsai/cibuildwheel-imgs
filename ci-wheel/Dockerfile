@@ -18,8 +18,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV RAPIDS_CUDA_VERSION="${CUDA_VER}"
 ENV RAPIDS_PY_VERSION="${PYTHON_VER}"
 
-ENV PYENV_ROOT="/pyenv" \
-    PATH="/pyenv/bin:/pyenv/shims:$PATH"
+ENV PYENV_ROOT="/pyenv"
+ENV PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
 RUN case "${LINUX_VER}" in \
     "ubuntu"*) \
