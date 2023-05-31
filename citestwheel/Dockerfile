@@ -4,10 +4,12 @@ ARG LINUX_VER=ubuntu18.04
 ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
 
+ARG PYTHON_VER=3.9
+
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV PYENV_ROOT="/pyenv" \
-    PATH="/pyenv/bin:/pyenv/shims:$PATH"
+ENV PYENV_ROOT="/pyenv"
+ENV PATH="/pyenv/bin:/pyenv/shims:$PATH"
 
 RUN apt-get update \
         && apt-get upgrade -y \
@@ -18,53 +20,16 @@ RUN apt-get update \
         curl llvm libncursesw5-dev xz-utils tk-dev \
         libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
-# for pyenv
-ARG PY39_VERSION="3.9.16"
-ARG PY310_VERSION="3.10.9"
-
 # Install pyenv
 RUN curl https://pyenv.run | bash
 
 # Create pyenvs
-RUN pyenv update \
-    && pyenv install ${PY39_VERSION} \
-    && pyenv install ${PY310_VERSION}
+RUN pyenv update && pyenv install ${PYTHON_VER}
 
-ARG CIBUILDWHEEL_VERSION=2.11.3
-
-RUN pyenv virtualenv ${PY310_VERSION} citools
-
-RUN eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" &&\
-        pyenv activate citools && python3 -m pip install awscli twine cibuildwheel==${CIBUILDWHEEL_VERSION}
-
-# Create symlinks of aws/cibuildwheel/twine into isolated dir
-RUN mkdir -p /citools-bin &&\
-        ln -snf /pyenv/versions/citools/bin/aws /citools-bin/aws &&\
-        ln -snf /pyenv/versions/citools/bin/twine /citools-bin/twine &&\
-        ln -snf /pyenv/versions/citools/bin/cibuildwheel /citools-bin/cibuildwheel
-
-# make cp39 default
-RUN pyenv global ${PY39_VERSION} && python --version
+RUN pyenv global ${PYTHON_VER} && python --version
 
 # add bin to path
-ENV PATH="/pyenv/versions/${PY39_VERSION}/bin/:$/pyenv/versions/${PY310_VERSION}/bin/:/citools-bin/:$PATH"
-
-# install docker-in-docker
-RUN apt-get update && apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-ARG CPU_ARCH
-RUN echo \
-  "deb [arch=${CPU_ARCH} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-RUN apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io
+ENV PATH="/pyenv/versions/${PYTHON_VER}/bin/:$PATH"
 
 COPY citestwheel.sh /citestwheel.sh
 
