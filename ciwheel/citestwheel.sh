@@ -17,6 +17,9 @@ arch=$(uname -m)
 # need this to init pyenv first
 eval "$(pyenv init -)"
 
+# make sure that the appropriate version is installed
+pyenv install ${RAPIDS_PY_VERSION} 
+
 # use pyenv to set appropriate python as default before citestwheel
 pyenv global "${RAPIDS_PY_VERSION}" && python --version
 
