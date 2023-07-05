@@ -28,7 +28,7 @@ RUN case "${LINUX_VER}" in \
         && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9 \
       ;; \
     "centos"*) \
-        yum update -y && yum install -y epel-release wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool centos-release-scl scl-utils cmake && yum clean all \
+        yum update --exclude=libnccl* -y && yum install -y epel-release wget gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel xz xz-devel libffi-devel curl git ncurses-devel numactl numactl-devel openssh-clients libcudnn8-devel zip blas-devel lapack-devel protobuf-compiler autoconf automake libtool centos-release-scl scl-utils cmake && yum clean all \
         && yum remove -y git && yum install -y https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y git jq devtoolset-11 && yum remove -y endpoint-repo \
         && echo -e ' \
         #!/bin/bash\n \
