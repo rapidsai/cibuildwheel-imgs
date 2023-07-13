@@ -1,4 +1,4 @@
-name: PR build of RAPIDS pip wheel CI images
+name: ci
 
 on:
   push:
@@ -6,14 +6,12 @@ on:
       - "pull-request/[0-9]+"
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  cibw-containers:
-    uses: ./.github/workflows/docker-multiarch-native.yml
-    secrets: inherit
+  build-images:
+    uses: ./.github/workflows/build-and-publish-images.yml
     with:
-      matrix_script: "./ci/compute-matrix.sh"
-      push: false
-      build_type: branch
+      build_type: pull-request
+    secrets: inherit
