@@ -55,7 +55,7 @@ RUN case "${LINUX_VER}" in \
 # Download and install GH CLI tool v2.32.0
 ARG GH_VERSION=2.32.0
 RUN <<EOF
-set -ex
+set -e
 wget https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${CPU_ARCH}.tar.gz
 tar -xf gh_*.tar.gz
 mv gh_*/bin/gh /usr/local/bin
