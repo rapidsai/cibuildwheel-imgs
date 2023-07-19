@@ -7,6 +7,7 @@ FROM ${BASE_IMAGE}
 
 ARG CUDA_VER
 ARG LINUX_VER
+ARG CPU_ARCH
 ARG REAL_ARCH
 ARG PYTHON_VER=3.9
 ARG MANYLINUX_VER
@@ -17,6 +18,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Set RAPIDS versions env variables
 ENV RAPIDS_CUDA_VERSION="${CUDA_VER}"
 ENV RAPIDS_PY_VERSION="${PYTHON_VER}"
+
+# RAPIDS pip index
+ENV PIP_EXTRA_INDEX_URL="https://pypi.k8s.rapids.ai/simple"
 
 ENV PYENV_ROOT="/pyenv"
 ENV PATH="/pyenv/bin:/pyenv/shims:$PATH"
@@ -47,6 +51,16 @@ RUN case "${LINUX_VER}" in \
       echo "Unsupported LINUX_VER: ${LINUX_VER}" && exit 1; \
       ;; \
   esac
+
+# Download and install GH CLI tool v2.32.0
+ARG GH_VERSION=2.32.0
+RUN <<EOF
+set -e
+wget https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${CPU_ARCH}.tar.gz
+tar -xf gh_*.tar.gz
+mv gh_*/bin/gh /usr/local/bin
+rm -rf gh_*
+EOF
 
 # Install sccache
 ARG SCCACHE_VERSION=0.5.0
