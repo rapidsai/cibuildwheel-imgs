@@ -4,7 +4,12 @@ ARG LINUX_VER=ubuntu18.04
 ARG BASE_IMAGE=nvidia/cuda:${CUDA_VER}-devel-${LINUX_VER}
 FROM ${BASE_IMAGE}
 
+ARG CUDA_VER
 ARG PYTHON_VER=3.9
+
+# Set RAPIDS versions env variables
+ENV RAPIDS_CUDA_VERSION="${CUDA_VER}"
+ENV RAPIDS_PY_VERSION="${PYTHON_VER}"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -43,7 +48,7 @@ RUN mkdir -p /aws_install && cd /aws_install && \
 
 COPY citestwheel.sh /citestwheel.sh
 
-# update git > 2.17 
+# update git > 2.17
 RUN grep '18.04' /etc/issue && bash -c "apt-get install -y software-properties-common && add-apt-repository ppa:git-core/ppa -y && apt-get update && apt-get install --upgrade -y git" || true;
 
 # Install latest gha-tools
