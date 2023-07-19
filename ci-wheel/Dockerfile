@@ -55,7 +55,7 @@ RUN case "${LINUX_VER}" in \
 # Download and install GH CLI tool v2.32.0
 ARG GH_VERSION=2.32.0
 RUN <<EOF
-set -e
+set -ex
 wget https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${CPU_ARCH}.tar.gz
 tar -xf gh_*.tar.gz
 mv gh_*/bin/gh /usr/local/bin
@@ -73,16 +73,6 @@ RUN curl -o /tmp/sccache.tar.gz \
 
 # Set AUDITWHEEL_* env vars for use with auditwheel
 ENV AUDITWHEEL_POLICY=${POLICY} AUDITWHEEL_ARCH=${REAL_ARCH} AUDITWHEEL_PLAT=${POLICY}_${REAL_ARCH}
-
-# Set sccache env vars
-ENV CMAKE_CUDA_COMPILER_LAUNCHER=sccache
-ENV CMAKE_CXX_COMPILER_LAUNCHER=sccache
-ENV CMAKE_C_COMPILER_LAUNCHER=sccache
-ENV SCCACHE_BUCKET=rapids-sccache-east
-ENV SCCACHE_REGION=us-east-2
-ENV SCCACHE_IDLE_TIMEOUT=32768
-ENV SCCACHE_S3_USE_SSL=true
-ENV SCCACHE_S3_NO_CREDENTIALS=false
 
 # Install ucx
 ARG UCX_VERSION=1.14.1
