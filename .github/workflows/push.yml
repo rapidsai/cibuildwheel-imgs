@@ -3,7 +3,7 @@ name: publish
 on:
   push:
     branches:
-      - "imgs-v2"
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
