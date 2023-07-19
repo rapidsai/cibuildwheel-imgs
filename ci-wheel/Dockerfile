@@ -53,21 +53,14 @@ RUN case "${LINUX_VER}" in \
   esac
 
 # Download and install GH CLI tool v2.32.0
-RUN case "${CPU_ARCH}" in \
-  "amd"*) \
-    wget https://github.com/cli/cli/releases/download/v2.32.0/gh_2.32.0_linux_amd64.tar.gz \
-    && tar -xf gh_2.32.0_linux_amd64.tar.gz \
-    && mv gh_2.32.0_linux_amd64/bin/gh usr/local/bin \
-  ;; \
-  "arm"*) \
-    wget https://github.com/cli/cli/releases/download/v2.32.0/gh_2.32.0_linux_arm64.tar.gz \
-    && tar -xf gh_2.32.0_linux_arm64.tar.gz \
-    && mv gh_2.32.0_linux_arm64/bin/gh usr/local/bin \
-  ;; \
-  *) \
-      echo "Unsupported ARCH: ${CPU_ARCH}}" && exit 1; \
-      ;; \
-  esac
+ARG GH_VERSION=2.32.0
+RUN <<EOF
+set -e
+wget https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${CPU_ARCH}.tar.gz
+tar -xf gh_*.tar.gz
+mv gh_*/bin/gh /usr/local/bin
+rm -rf gh_*
+EOF
 
 # Install sccache
 ARG SCCACHE_VERSION=0.5.0
