@@ -19,11 +19,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Compute matrix
+      - name: Compute Matrix
         id: compute-matrix
-        run: |
-          MATRIX=$(ci/compute-mx.sh)
-          echo "MATRIX=${MATRIX}" | tee -a ${GITHUB_OUTPUT}
+        uses: ./.github/actions/compute-matrix
   docker:
     needs: compute-matrix
     strategy:
@@ -80,24 +78,11 @@ jobs:
     needs: [compute-matrix, build-multiarch-manifest]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Remove temporary images
-        run: |
-          HUB_TOKEN=$(
-            curl -s -H "Content-Type: application/json" \
-              -X POST \
-              -d "{\"username\": \"${{ secrets.GPUCIBOT_DOCKERHUB_USER }}\", \"password\": \"${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}\"}" \
-              https://hub.docker.com/v2/users/login/ | jq -r .token \
-          )
-
-          org="rapidsai"
-          repo="${{ matrix.IMAGE_REPO }}"
-          tag="cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
-
-          for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
-            curl -i -X DELETE \
-              -H "Accept: application/json" \
-              -H "Authorization: JWT $HUB_TOKEN" \
-              "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
-          done
+      fail-fast: false
+    uses: ./.github/workflows/delete-temp-images.yml
+    with:
+      ARCHES: ${{ toJSON(matrix.ARCHES) }}
+      CUDA_VER: ${{ matrix.CUDA_VER }}
+      IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
+      LINUX_VER: ${{ matrix.LINUX_VER }}
+      PYTHON_VER: ${{ matrix.PYTHON_VER }}
