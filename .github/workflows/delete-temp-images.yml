@@ -18,6 +18,9 @@ on:
       ARCHES:
         required: true
         type: string
+      BUILD_TYPE:
+        required: true
+        type: string
 
 jobs:
   delete-temp-images:
@@ -36,6 +39,14 @@ jobs:
             org="rapidsai"
             repo="${{ inputs.IMAGE_REPO }}"
             tag="cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+            if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
+              repo="staging"
+              # form a non-prod tag (note: this logic must be same as in the build image workflow).
+              pr_num="${GITHUB_REF_NAME##*/}"
+              TAG_PREFIX="${{ inputs.IMAGE_REPO }}-${pr_num}-"
+              NON_PROD_TAG="${TAG_PREFIX}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+              tag=${NON_PROD_TAG}
+            fi
 
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
                 curl -i -X DELETE \
@@ -43,3 +54,11 @@ jobs:
                 -H "Authorization: JWT $HUB_TOKEN" \
                 "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
             done
+
+            # delete the multi-arch image
+            if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
+                curl -i -X DELETE \
+                -H "Accept: application/json" \
+                -H "Authorization: JWT $HUB_TOKEN" \
+                "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag/"
+            fi
