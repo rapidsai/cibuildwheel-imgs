@@ -18,40 +18,29 @@ on:
       IMAGE_REPO:
         required: true
         type: string
-      TAG:
-        required: true
-        type: string
       BUILD_TYPE:
         required: true
         type: string
 
 jobs:
-  get-real-tag:
+  get-prefix:
     runs-on: ubuntu-latest
     outputs:
-      REAL_TAG: ${{ steps.get-real-tag.outputs.REAL_TAG }}
+      FULL_PREFIX: ${{ steps.get-prefix.outputs.FULL_PREFIX }}
+      USED_REPO: ${{ steps.get-prefix.outputs.PREFIX }}
+      TAG_PREFIX: ${{ steps.get-prefix.outputs.TAG_PREFIX }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get Real Tag
-        id: get-real-tag
-        # TODO: This should be a separate action?
-        # This is needed because we push to a non-prod repository for PRs.
-        # For non-PR workflows, the target repository is part of the original matrix
-        # determined in the compute-matrix step of the build-and-publish-images 
-        # workflow (i.e from axis.yaml).
-        run: |
-          REAL_TAG=${{ inputs.TAG }}
-          if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
-            # then we must form a non-prod tag.
-            pr_num="${GITHUB_REF_NAME##*/}"
-            TAG_PREFIX="${{ inputs.IMAGE_REPO }}-${pr_num}-"
-            NON_PROD_TAG="rapidsai/staging:${TAG_PREFIX}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
-            REAL_TAG=${NON_PROD_TAG}
-          fi
-          echo "REAL_TAG=${REAL_TAG}" >> $GITHUB_OUTPUT
+      - name: Compute Prefix
+        id: get-prefix
+        uses: ./.github/actions/compute-prefix
+        with:
+          ORIGINAL_PREFIX: rapidsai/${{ inputs.IMAGE_REPO }}
+          IMAGE_REPOSITORY: ${{ inputs.IMAGE_REPO }}
+          BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
   docker-build:
-    needs: get-real-tag
+    needs: get-prefix
     strategy:
       matrix:
         ARCH: ${{ fromJSON(inputs.ARCHES) }}
@@ -93,7 +82,7 @@ jobs:
         with:
           context: ./${{ inputs.IMAGE_REPO }}
           file: ./${{ inputs.IMAGE_REPO }}/Dockerfile
-          push: ${{ inputs.BUILD_TYPE == 'branch' }}
+          push: true
           pull: true
           build-args: |
             CUDA_VER=${{ inputs.CUDA_VER }}
@@ -102,4 +91,4 @@ jobs:
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
             MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
-          tags: ${{ needs.get-real-tag.outputs.REAL_TAG }}-${{ matrix.ARCH }}
+          tags: ${{ needs.get-prefix.outputs.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}-${{ matrix.ARCH }}

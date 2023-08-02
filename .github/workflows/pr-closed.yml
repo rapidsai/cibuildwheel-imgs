@@ -23,5 +23,6 @@ jobs:
         IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
         LINUX_VER: ${{ matrix.LINUX_VER }}
         PYTHON_VER: ${{ matrix.PYTHON_VER }}
+        BUILD_TYPE: "pull-request"
       secrets: inherit
   

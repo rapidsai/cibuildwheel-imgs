@@ -35,60 +35,29 @@ jobs:
       LINUX_VER: ${{ matrix.LINUX_VER }}
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
-      TAG: rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
       BUILD_TYPE: ${{ inputs.build_type }}
+
   build-multiarch-manifest:
     needs: [docker, compute-matrix]
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
-          password: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
-      - name: Create multiarch manifest
-        run: |
-          LATEST_CUDA_VER=$(yq '.CUDA_VER | sort | .[-1]' axis.yaml)
-          LATEST_PYTHON_VER=$(yq -o json '.PYTHON_VER' axis.yaml | jq -r 'max_by(split(".") | map(tonumber))')
-          LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
+    secrets: inherit
+    uses: ./.github/workflows/build-multiarch-manifest.yml
+    with:
+      ARCHES: ${{ toJSON(matrix.ARCHES) }}
+      CUDA_VER: ${{ matrix.CUDA_VER }}
+      LINUX_VER: ${{ matrix.LINUX_VER }}
+      PYTHON_VER: ${{ matrix.PYTHON_VER }}
+      IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
+      BUILD_TYPE: ${{ inputs.build_type }}
 
-          source_tags=()
-          tag="rapidsai/${{ matrix.IMAGE_REPO }}:cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
-          if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
-            # form a non-prod tag (note: this logic must be same as in the build image workflow).
-            pr_num="${GITHUB_REF_NAME##*/}"
-            TAG_PREFIX="${{ matrix.IMAGE_REPO }}-${pr_num}-"
-            NON_PROD_TAG="rapidsai/staging:${TAG_PREFIX}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}"
-            tag=${NON_PROD_TAG}
-          fi
-          for arch in $(echo '${{ toJSON(matrix.ARCHES) }}' | jq .[] -r); do
-            source_tags+=("${tag}-${arch}")
-          done
-
-          docker manifest create ${tag} ${source_tags[@]}
-          docker manifest push ${tag}
-          if [[
-            "${LATEST_UBUNTU_VER}" == "${{ matrix.LINUX_VER }}" &&
-            "${LATEST_CUDA_VER}" == "${{ matrix.CUDA_VER }}" &&
-            "${LATEST_PYTHON_VER}" == "${{ matrix.PYTHON_VER }}"
-          ]]; then
-            # only create a 'latest' manifest if it is a non-PR workflow.
-            if [[ "${{ inputs.BUILD_TYPE }}" != "pull-request" ]]; then
-              docker manifest create rapidsai/${{ matrix.IMAGE_REPO }}:latest ${source_tags[@]}
-              docker manifest push rapidsai/${{ matrix.IMAGE_REPO }}:latest
-            else
-              echo "Skipping 'latest' manifest creation for PR workflow."
-            fi
-          fi
   delete-temp-images:
     needs: [compute-matrix, build-multiarch-manifest]
+    if: inputs.build_type == 'branch'
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
       fail-fast: false
+    secrets: inherit
     uses: ./.github/workflows/delete-temp-images.yml
     with:
       ARCHES: ${{ toJSON(matrix.ARCHES) }}
