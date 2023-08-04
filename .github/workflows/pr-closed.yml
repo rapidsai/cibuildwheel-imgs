@@ -12,6 +12,9 @@ jobs:
         - name: Compute Matrix Action
           id: compute-matrix
           uses: ./.github/actions/compute-matrix
+          with:
+            BUILD_TYPE: "pull-request"
+            PR_NUM: ${{ github.event.pull_request.number }}
     delete-imgs:
       needs: compute-matrix
       strategy:
@@ -24,5 +27,7 @@ jobs:
         LINUX_VER: ${{ matrix.LINUX_VER }}
         PYTHON_VER: ${{ matrix.PYTHON_VER }}
         BUILD_TYPE: "pull-request"
+        USED_REPO: ${{ matrix.USED_REPO }}
+        TAG_PREFIX: ${{ matrix.TAG_PREFIX }}
       secrets: inherit
   

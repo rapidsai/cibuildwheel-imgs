@@ -21,27 +21,16 @@ on:
       BUILD_TYPE:
         required: true
         type: string
+      USED_REPO:
+        required: true
+        type: string
+      TAG_PREFIX:
+        required: true
+        type: string
 
 jobs:
-  get-prefix:
-    runs-on: ubuntu-latest
-    outputs:
-      FULL_PREFIX: ${{ steps.get-prefix.outputs.FULL_PREFIX }}
-      USED_REPO: ${{ steps.get-prefix.outputs.USED_REPO }}
-      TAG_PREFIX: ${{ steps.get-prefix.outputs.TAG_PREFIX }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Compute Prefix
-        id: get-prefix
-        uses: ./.github/actions/compute-prefix
-        with:
-          ORIGINAL_PREFIX: rapidsai/${{ inputs.IMAGE_REPO }}
-          IMAGE_REPOSITORY: ${{ inputs.IMAGE_REPO }}
-          BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
   delete-temp-images:
     runs-on: ubuntu-latest
-    needs: get-prefix
     if: always()
     steps:
       - name: Remove temporary images
@@ -54,8 +43,8 @@ jobs:
             )
 
             org="rapidsai"
-            repo="${{ needs.get-prefix.outputs.USED_REPO }}"
-            tag="${{ needs.get-prefix.outputs.TAG_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+            repo="${{ inputs.USED_REPO }}"
+            tag="${{ inputs.TAG_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
 
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
                 curl -i -X DELETE \
