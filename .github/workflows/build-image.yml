@@ -21,32 +21,19 @@ on:
       BUILD_TYPE:
         required: true
         type: string
+      FULL_PREFIX:
+        required: true
+        type: string
 
 jobs:
-  get-prefix:
-    runs-on: ubuntu-latest
-    outputs:
-      FULL_PREFIX: ${{ steps.get-prefix.outputs.FULL_PREFIX }}
-      USED_REPO: ${{ steps.get-prefix.outputs.PREFIX }}
-      TAG_PREFIX: ${{ steps.get-prefix.outputs.TAG_PREFIX }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Compute Prefix
-        id: get-prefix
-        uses: ./.github/actions/compute-prefix
-        with:
-          ORIGINAL_PREFIX: rapidsai/${{ inputs.IMAGE_REPO }}
-          IMAGE_REPOSITORY: ${{ inputs.IMAGE_REPO }}
-          BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
   docker-build:
-    needs: get-prefix
     strategy:
       matrix:
         ARCH: ${{ fromJSON(inputs.ARCHES) }}
         CUDA_VER: ["${{ inputs.CUDA_VER }}"]
         LINUX_VER: ["${{ inputs.LINUX_VER }}"]
         PYTHON_VER: ["${{ inputs.PYTHON_VER }}"]
+        FULL_PREFIX: ["${{ inputs.FULL_PREFIX }}"]
       fail-fast: false
     runs-on: "linux-${{ matrix.ARCH }}-cpu4"
     steps:
@@ -91,4 +78,4 @@ jobs:
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
             MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
-          tags: ${{ needs.get-prefix.outputs.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}-${{ matrix.ARCH }}
+          tags: ${{ matrix.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}-${{ matrix.ARCH }}
