@@ -1,3 +1,5 @@
+name: pr-closed
+
 on:
     pull_request:
       types: [closed]
@@ -19,6 +21,8 @@ jobs:
       needs: compute-matrix
       strategy:
         matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
+        fail-fast: false
+      secrets: inherit
       uses: ./.github/workflows/delete-temp-images.yml
       with:
         ARCHES: ${{ toJSON(matrix.ARCHES) }}
@@ -29,5 +33,3 @@ jobs:
         BUILD_TYPE: "pull-request"
         USED_REPO: ${{ matrix.USED_REPO }}
         TAG_PREFIX: ${{ matrix.TAG_PREFIX }}
-      secrets: inherit
-  
