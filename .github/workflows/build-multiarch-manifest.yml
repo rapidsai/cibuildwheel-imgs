@@ -21,27 +21,12 @@ on:
       BUILD_TYPE:
         required: true
         type: string
+      FULL_PREFIX:
+        required: true
+        type: string
 
 jobs:
-  get-prefix:
-    runs-on: ubuntu-latest
-    outputs:
-        FULL_PREFIX: ${{ steps.get-prefix.outputs.FULL_PREFIX }}
-        USED_REPO: ${{ steps.get-prefix.outputs.PREFIX }}
-        TAG_PREFIX: ${{ steps.get-prefix.outputs.TAG_PREFIX }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Compute Prefix
-        id: get-prefix
-        uses: ./.github/actions/compute-prefix
-        with:
-          ORIGINAL_PREFIX: rapidsai/${{ inputs.IMAGE_REPO }}
-          IMAGE_REPOSITORY: ${{ inputs.IMAGE_REPO }}
-          BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
-
   build-multiarch-manifest:
-    needs: [get-prefix]
     runs-on: ubuntu-latest
     steps:
         - name: Checkout
@@ -58,7 +43,7 @@ jobs:
             LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
     
             source_tags=()
-            tag="${{ needs.get-prefix.outputs.FULL_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+            tag="${{ inputs.FULL_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
                 source_tags+=("${tag}-${arch}")
             done

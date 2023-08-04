@@ -22,6 +22,8 @@ jobs:
       - name: Compute Matrix
         id: compute-matrix
         uses: ./.github/actions/compute-matrix
+        with:
+          BUILD_TYPE: ${{ inputs.build_type }}
   docker:
     needs: compute-matrix
     strategy:
