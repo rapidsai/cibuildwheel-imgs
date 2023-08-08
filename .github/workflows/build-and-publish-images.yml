@@ -17,8 +17,6 @@ jobs:
     outputs:
       MATRIX: ${{ steps.compute-matrix.outputs.MATRIX }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Compute Matrix
         id: compute-matrix
         uses: ./.github/actions/compute-matrix
