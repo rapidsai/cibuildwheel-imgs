@@ -47,7 +47,7 @@ jobs:
             tag="${{ inputs.TAG_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
 
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
-                curl -i -X DELETE \
+                curl --fail-with-body -i -X DELETE \
                 -H "Accept: application/json" \
                 -H "Authorization: JWT $HUB_TOKEN" \
                 "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
@@ -55,7 +55,7 @@ jobs:
 
             # for PRs, delete the multi-arch image
             if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
-                curl -i -X DELETE \
+                curl --fail-with-body -i -X DELETE \
                 -H "Accept: application/json" \
                 -H "Authorization: JWT $HUB_TOKEN" \
                 "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag/"
