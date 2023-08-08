@@ -1,14 +1,14 @@
-name: 'Compute Matrix Action'
-description: 'Computes matrix'
+name: "Compute Matrix Action"
+description: "Computes matrix"
 inputs:
   BUILD_TYPE:
-    description: 'The build type'
+    description: "The build type"
     required: true
   PR_NUM:
-    description: 'The PR number'
+    description: "The PR number"
     required: false
 outputs:
-  MATRIX: 
+  MATRIX:
     description: "Computed matrix"
     value: ${{ steps.compute-matrix.outputs.MATRIX }}
 runs:
@@ -23,7 +23,7 @@ runs:
         if [[ -z "${PR_NUM}" ]]; then
             export PR_NUM="${GITHUB_REF_NAME##*/}"
         fi
-        
+
         export BUILD_TYPE=${{ inputs.BUILD_TYPE }}
         MATRIX=$(ci/compute-mx.sh)
         echo "MATRIX=${MATRIX}" | tee -a ${GITHUB_OUTPUT}

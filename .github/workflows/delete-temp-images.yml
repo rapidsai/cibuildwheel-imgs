@@ -35,20 +35,20 @@ jobs:
     steps:
       - name: Remove temporary images
         run: |
-            HUB_TOKEN=$(
-                curl -s -H "Content-Type: application/json" \
-                -X POST \
-                -d "{\"username\": \"${{ secrets.GPUCIBOT_DOCKERHUB_USER }}\", \"password\": \"${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}\"}" \
-                https://hub.docker.com/v2/users/login/ | jq -r .token \
-            )
+          HUB_TOKEN=$(
+              curl -s -H "Content-Type: application/json" \
+              -X POST \
+              -d "{\"username\": \"${{ secrets.GPUCIBOT_DOCKERHUB_USER }}\", \"password\": \"${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}\"}" \
+              https://hub.docker.com/v2/users/login/ | jq -r .token \
+          )
 
-            org="rapidsai"
-            repo="${{ inputs.USED_REPO }}"
-            tag="${{ inputs.TAG }}"
+          org="rapidsai"
+          repo="${{ inputs.USED_REPO }}"
+          tag="${{ inputs.TAG }}"
 
-            for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
-                curl --fail-with-body -i -X DELETE \
-                -H "Accept: application/json" \
-                -H "Authorization: JWT $HUB_TOKEN" \
-                "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
-            done
+          for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
+              curl --fail-with-body -i -X DELETE \
+              -H "Accept: application/json" \
+              -H "Authorization: JWT $HUB_TOKEN" \
+              "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
+          done
