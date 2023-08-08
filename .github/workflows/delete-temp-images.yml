@@ -52,11 +52,3 @@ jobs:
                 -H "Authorization: JWT $HUB_TOKEN" \
                 "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
             done
-
-            # for PRs, delete the multi-arch image
-            if [[ "${{ inputs.BUILD_TYPE }}" == "pull-request" ]]; then
-                curl --fail-with-body -i -X DELETE \
-                -H "Accept: application/json" \
-                -H "Authorization: JWT $HUB_TOKEN" \
-                "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag/"
-            fi
