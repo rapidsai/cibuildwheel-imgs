@@ -21,7 +21,7 @@ on:
       BUILD_TYPE:
         required: true
         type: string
-      FULL_PREFIX:
+      TAG:
         required: true
         type: string
 
@@ -33,7 +33,6 @@ jobs:
         CUDA_VER: ["${{ inputs.CUDA_VER }}"]
         LINUX_VER: ["${{ inputs.LINUX_VER }}"]
         PYTHON_VER: ["${{ inputs.PYTHON_VER }}"]
-        FULL_PREFIX: ["${{ inputs.FULL_PREFIX }}"]
       fail-fast: false
     runs-on: "linux-${{ matrix.ARCH }}-cpu4"
     steps:
@@ -78,4 +77,4 @@ jobs:
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
             MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
-          tags: ${{ matrix.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}-${{ matrix.ARCH }}
+          tags: ${{ inputs.TAG }}-${{ matrix.ARCH }}

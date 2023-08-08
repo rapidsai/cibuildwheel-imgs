@@ -36,7 +36,7 @@ jobs:
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
       BUILD_TYPE: ${{ inputs.build_type }}
-      FULL_PREFIX: ${{ matrix.FULL_PREFIX }}
+      TAG: ${{ matrix.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
 
   build-multiarch-manifest:
     needs: [docker, compute-matrix]
@@ -51,7 +51,7 @@ jobs:
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
       BUILD_TYPE: ${{ inputs.build_type }}
-      FULL_PREFIX: ${{ matrix.FULL_PREFIX }}
+      TAG: ${{ matrix.FULL_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
 
   delete-temp-images:
     needs: [compute-matrix, build-multiarch-manifest]
@@ -69,4 +69,4 @@ jobs:
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       BUILD_TYPE: ${{ inputs.build_type }}
       USED_REPO: ${{ matrix.USED_REPO }}
-      TAG_PREFIX: ${{ matrix.TAG_PREFIX }}
+      TAG: ${{ matrix.TAG_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}

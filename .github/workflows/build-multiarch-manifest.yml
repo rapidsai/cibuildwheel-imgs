@@ -21,7 +21,7 @@ on:
       BUILD_TYPE:
         required: true
         type: string
-      FULL_PREFIX:
+      TAG:
         required: true
         type: string
 
@@ -43,7 +43,7 @@ jobs:
             LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
     
             source_tags=()
-            tag="${{ inputs.FULL_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+            tag="${{ inputs.TAG }}"
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
                 source_tags+=("${tag}-${arch}")
             done

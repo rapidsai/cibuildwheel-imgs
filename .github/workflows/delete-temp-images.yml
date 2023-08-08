@@ -24,7 +24,7 @@ on:
       USED_REPO:
         required: true
         type: string
-      TAG_PREFIX:
+      TAG:
         required: true
         type: string
 
@@ -44,7 +44,7 @@ jobs:
 
             org="rapidsai"
             repo="${{ inputs.USED_REPO }}"
-            tag="${{ inputs.TAG_PREFIX }}cuda${{ inputs.CUDA_VER }}-${{ inputs.LINUX_VER }}-py${{ inputs.PYTHON_VER }}"
+            tag="${{ inputs.TAG }}"
 
             for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
                 curl --fail-with-body -i -X DELETE \
