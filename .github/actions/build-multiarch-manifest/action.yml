@@ -1,0 +1,71 @@
+name: Build Multi-Arch Docker Image
+description: Create and push a multi-arch Docker image manifest
+inputs:
+  ARCHES:
+    required: true
+    type: string
+  CUDA_VER:
+    required: true
+    type: string
+  LINUX_VER:
+    required: true
+    type: string
+  PYTHON_VER:
+    required: true
+    type: string
+  IMAGE_REPO:
+    required: true
+    type: string
+  BUILD_TYPE:
+    required: true
+    type: string
+  IMAGE_NAME:
+    required: true
+    type: string
+  GPUCIBOT_DOCKERHUB_USER:
+    required: true
+    type: string
+  GPUCIBOT_DOCKERHUB_TOKEN:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.GPUCIBOT_DOCKERHUB_USER }}
+        password: ${{ inputs.GPUCIBOT_DOCKERHUB_TOKEN }}
+
+    - name: Create multiarch manifest
+      run: |
+        LATEST_CUDA_VER=$(yq '.CUDA_VER | sort | .[-1]' axis.yaml)
+        LATEST_PYTHON_VER=$(yq -o json '.PYTHON_VER' axis.yaml | jq -r 'max_by(split(".") | map(tonumber))')
+        LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
+
+        source_tags=()
+        tag="${{ inputs.IMAGE_NAME }}"
+        for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
+            source_tags+=("${tag}-${arch}")
+        done
+
+        docker manifest create ${tag} ${source_tags[@]}
+        docker manifest push ${tag}
+        if [[
+            "${LATEST_UBUNTU_VER}" == "${{ inputs.LINUX_VER }}" &&
+            "${LATEST_CUDA_VER}" == "${{ inputs.CUDA_VER }}" &&
+            "${LATEST_PYTHON_VER}" == "${{ inputs.PYTHON_VER }}"
+        ]]; then
+            # only create a 'latest' manifest if it is a non-PR workflow.
+            if [[ "${{ inputs.BUILD_TYPE }}" != "pull-request" ]]; then
+                docker manifest create rapidsai/${{ inputs.IMAGE_REPO }}:latest ${source_tags[@]}
+                docker manifest push rapidsai/${{ inputs.IMAGE_REPO }}:latest
+                else
+                echo "Skipping 'latest' manifest creation for PR workflow."
+            fi
+        fi
+      shell: bash
