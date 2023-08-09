@@ -21,7 +21,7 @@ on:
       BUILD_TYPE:
         required: true
         type: string
-      TAG:
+      IMAGE_NAME:
         required: true
         type: string
 
@@ -77,4 +77,4 @@ jobs:
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
             MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
-          tags: ${{ inputs.TAG }}-${{ matrix.ARCH }}
+          tags: ${{ inputs.IMAGE_NAME }}-${{ matrix.ARCH }}

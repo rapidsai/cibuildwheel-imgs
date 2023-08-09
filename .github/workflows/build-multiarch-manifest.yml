@@ -21,7 +21,7 @@ on:
       BUILD_TYPE:
         required: true
         type: string
-      TAG:
+      IMAGE_NAME:
         required: true
         type: string
 
@@ -43,7 +43,7 @@ jobs:
           LATEST_UBUNTU_VER=$(yq '.LINUX_VER | map(select(. == "*ubuntu*")) | sort | .[-1]' axis.yaml)
 
           source_tags=()
-          tag="${{ inputs.TAG }}"
+          tag="${{ inputs.IMAGE_NAME }}"
           for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
               source_tags+=("${tag}-${arch}")
           done

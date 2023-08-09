@@ -21,10 +21,7 @@ on:
       BUILD_TYPE:
         required: true
         type: string
-      USED_REPO:
-        required: true
-        type: string
-      TAG:
+      IMAGE_NAME:
         required: true
         type: string
 
@@ -42,9 +39,11 @@ jobs:
               https://hub.docker.com/v2/users/login/ | jq -r .token \
           )
 
-          org="rapidsai"
-          repo="${{ inputs.USED_REPO }}"
-          tag="${{ inputs.TAG }}"
+          image_name="${{ inputs.IMAGE_NAME }}"
+          org=${image_name%%/*}
+          temp=${image_name#*/}
+          repo=${temp%%:*}
+          tag=${image_name##*:}
 
           for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
               curl --fail-with-body -i -X DELETE \
