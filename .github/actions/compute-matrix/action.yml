@@ -4,9 +4,6 @@ inputs:
   BUILD_TYPE:
     description: "The build type"
     required: true
-  PR_NUM:
-    description: "The PR number"
-    required: false
 outputs:
   MATRIX:
     description: "Computed matrix"
@@ -17,12 +14,8 @@ runs:
     - name: Compute matrix
       id: compute-matrix
       run: |
-        export PR_NUM="${{ inputs.PR_NUM }}"
-        if [[ -z "${PR_NUM}" ]]; then
-            export PR_NUM="${GITHUB_REF_NAME##*/}"
-        fi
-
-        export BUILD_TYPE=${{ inputs.BUILD_TYPE }}
         MATRIX=$(ci/compute-mx.sh)
         echo "MATRIX=${MATRIX}" | tee -a ${GITHUB_OUTPUT}
+      env:
+        BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
       shell: bash

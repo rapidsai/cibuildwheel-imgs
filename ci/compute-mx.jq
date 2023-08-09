@@ -13,11 +13,28 @@ def compute_arch($x):
 def matches($entry; $exclude):
   all($exclude | to_entries | .[]; $entry[.key] == .value);
 
+def compute_repo($x):
+  if
+    env.BUILD_TYPE == "pull-request"
+  then
+    "staging"
+  else
+    $x.IMAGE_REPO
+  end;
+
+def compute_tag_prefix($x):
+  if
+    env.BUILD_TYPE == "branch"
+  then
+    ""
+  else
+    $x.IMAGE_REPO + "-" + env.PR_NUM + "-"
+  end;
+
 def compute_image_name($x):
-  ($x.IMAGE_REPO + if $build_type == "pull-request" then "-" + $pr_num + "-" else "" end) as $tag_prefix |
-  (if $build_type == "pull-request" then "staging" else $x.IMAGE_REPO end) as $docker_repo |
-  ("rapidsai/" + if $build_type == "pull-request" then $docker_repo + ":" + $tag_prefix else $x.IMAGE_REPO + ":" end) as $full_prefix |
-  $full_prefix + "cuda" + $x.CUDA_VER + "-" + $x.LINUX_VER + "-" + "py" + $x.PYTHON_VER |
+  compute_repo($x) as $repo |
+  compute_tag_prefix($x) as $tag_prefix |
+  "rapidsai/" + $repo + ":" + $tag_prefix + "cuda" + $x.CUDA_VER + "-" + $x.LINUX_VER + "-" + "py" + $x.PYTHON_VER |
   $x + {IMAGE_NAME: .};
 
 

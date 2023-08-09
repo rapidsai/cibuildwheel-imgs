@@ -1,5 +1,16 @@
 #!/bin/bash
-
 set -euo pipefail
 
-yq -o json axis.yaml | jq -c 'include "ci/compute-mx"; compute_mx(.)' --arg pr_num "${PR_NUM}" --arg build_type "${BUILD_TYPE}"
+case "${BUILD_TYPE}" in
+  pull-request)
+    export PR_NUM="${GITHUB_REF_NAME##*/}"
+    ;;
+  branch)
+    ;;
+  *)
+    echo "Invalid build type: '${BUILD_TYPE}'"
+    exit 1
+    ;;
+esac
+
+yq -o json axis.yaml | jq -c 'include "ci/compute-mx"; compute_mx(.)'
