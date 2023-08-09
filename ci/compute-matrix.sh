@@ -13,4 +13,4 @@ case "${BUILD_TYPE}" in
     ;;
 esac
 
-yq -o json axis.yaml | jq -c 'include "ci/compute-mx"; compute_mx(.)'
+yq -o json axis.yaml | jq -c 'include "ci/compute-matrix"; compute_matrix(.)'
