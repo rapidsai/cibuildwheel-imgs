@@ -27,6 +27,7 @@ on:
 
 jobs:
   build-multiarch-manifest:
+    name: manifest (${{ inputs.CUDA_VER }}, ${{ inputs.PYTHON_VER }}, ${{ inputs.LINUX_VER }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -27,6 +27,7 @@ on:
 
 jobs:
   docker-build:
+    name: build (${{ matrix.CUDA_VER }}, ${{ matrix.PYTHON_VER }}, ${{ matrix.LINUX_VER }}, ${{ matrix.ARCH }})
     strategy:
       matrix:
         ARCH: ${{ fromJSON(inputs.ARCHES) }}
