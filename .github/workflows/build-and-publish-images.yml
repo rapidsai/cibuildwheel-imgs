@@ -84,6 +84,6 @@ jobs:
           LINUX_VER: ${{ matrix.LINUX_VER }}
           PYTHON_VER: ${{ matrix.PYTHON_VER }}
           BUILD_TYPE: ${{ inputs.build_type }}
-          IMAGE_NAME: ${{ matrix.TAG_PREFIX }}cuda${{ matrix.CUDA_VER }}-${{ matrix.LINUX_VER }}-py${{ matrix.PYTHON_VER }}
+          IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
           GPUCIBOT_DOCKERHUB_USER: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
           GPUCIBOT_DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
