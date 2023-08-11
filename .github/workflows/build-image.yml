@@ -63,7 +63,6 @@ jobs:
           REAL_ARCH=$(arch)
           echo "REAL_ARCH=${REAL_ARCH}" >> $GITHUB_OUTPUT
       - name: Build image
-        if:
         uses: docker/build-push-action@v4
         with:
           context: ./${{ inputs.IMAGE_REPO }}

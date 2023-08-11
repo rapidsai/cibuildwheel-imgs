@@ -26,7 +26,6 @@ jobs:
           echo "MATRIX=${MATRIX}" | tee -a ${GITHUB_OUTPUT}
         env:
           BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
-        shell: bash
   docker:
     needs: compute-matrix
     strategy:

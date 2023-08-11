@@ -30,27 +30,13 @@ inputs:
     type: string
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Remove temporary images
-      run: |
-        HUB_TOKEN=$(
-            curl -s -H "Content-Type: application/json" \
-            -X POST \
-            -d "{\"username\": \"${{ inputs.GPUCIBOT_DOCKERHUB_USER }}\", \"password\": \"${{ inputs.GPUCIBOT_DOCKERHUB_TOKEN }}\"}" \
-            https://hub.docker.com/v2/users/login/ | jq -r .token \
-        )
-        echo "::add-mask::${HUB_TOKEN}"
-
-        image_name="${{ inputs.IMAGE_NAME }}"
-        org=${image_name%%/*}
-        temp=${image_name#*/}
-        repo=${temp%%:*}
-        tag=${image_name##*:}
-
-        for arch in $(echo '${{ inputs.ARCHES }}' | jq .[] -r); do
-            curl --fail-with-body -i -X DELETE \
-            -H "Accept: application/json" \
-            -H "Authorization: JWT $HUB_TOKEN" \
-            "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
-        done
+      run: .github/actions/delete-temp-images/remove-temp-images.sh
+      shell: bash
+      env:
+        GPUCIBOT_DOCKERHUB_USER: ${{ inputs.GPUCIBOT_DOCKERHUB_USER }}
+        GPUCIBOT_DOCKERHUB_TOKEN: ${{ inputs.GPUCIBOT_DOCKERHUB_TOKEN }}
+        IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+        ARCHES: "${{ inputs.ARCHES }}"
