@@ -40,6 +40,7 @@ runs:
             -d "{\"username\": \"${{ inputs.GPUCIBOT_DOCKERHUB_USER }}\", \"password\": \"${{ inputs.GPUCIBOT_DOCKERHUB_TOKEN }}\"}" \
             https://hub.docker.com/v2/users/login/ | jq -r .token \
         )
+        echo "::add-mask::${HUB_TOKEN}"
 
         image_name="${{ inputs.IMAGE_NAME }}"
         org=${image_name%%/*}
