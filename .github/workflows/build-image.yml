@@ -24,6 +24,9 @@ on:
       IMAGE_NAME:
         required: true
         type: string
+      MANYLINUX_VER:
+        required: true
+        type: string
 
 jobs:
   docker-build:
@@ -34,6 +37,7 @@ jobs:
         CUDA_VER: ["${{ inputs.CUDA_VER }}"]
         LINUX_VER: ["${{ inputs.LINUX_VER }}"]
         PYTHON_VER: ["${{ inputs.PYTHON_VER }}"]
+        MANYLINUX_VER: ["${{ inputs.MANYLINUX_VER }}"]
       fail-fast: false
     runs-on: "linux-${{ matrix.ARCH }}-cpu4"
     steps:
@@ -58,11 +62,6 @@ jobs:
         run: |
           REAL_ARCH=$(arch)
           echo "REAL_ARCH=${REAL_ARCH}" >> $GITHUB_OUTPUT
-          if [[ "${{ inputs.LINUX_VER }}" == "ubuntu20.04" || "${{ inputs.LINUX_VER }}" == "ubuntu18.04" ]]; then
-            echo "MANYLINUX_VER=manylinux_2_31" >> $GITHUB_OUTPUT
-          else
-            echo "MANYLINUX_VER=manylinux_2_17" >> $GITHUB_OUTPUT
-          fi
       - name: Build image
         if:
         uses: docker/build-push-action@v4
@@ -77,5 +76,5 @@ jobs:
             PYTHON_VER=${{ inputs.PYTHON_VER }}
             CPU_ARCH=${{ matrix.ARCH }}
             REAL_ARCH=${{ steps.get-real-arch.outputs.REAL_ARCH }}
-            MANYLINUX_VER=${{ steps.get-real-arch.outputs.MANYLINUX_VER }}
+            MANYLINUX_VER=${{ matrix.MANYLINUX_VER }}
           tags: ${{ inputs.IMAGE_NAME }}-${{ matrix.ARCH }}

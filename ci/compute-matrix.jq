@@ -31,6 +31,16 @@ def compute_tag_prefix($x):
     $x.IMAGE_REPO + "-" + env.PR_NUM + "-"
   end;
 
+def compute_manylinux_version($x):
+  if
+    $x.LINUX_VER == "ubuntu20.04" // $x.LINUX_VER == "ubuntu18.04"
+  then
+    "manylinux_2_31"
+  else
+    "manylinux_2_17"
+  end |
+  $x + {MANYLINUX_VER: .};
+
 def compute_image_name($x):
   compute_repo($x) as $repo |
   compute_tag_prefix($x) as $tag_prefix |
@@ -57,6 +67,7 @@ def compute_matrix($input):
     lists2dict($matrix_keys; .) |
     filter_excludes(.; $excludes) |
     compute_arch(.) |
+    compute_manylinux_version(.) |
     compute_image_name(.)
   ] |
   {include: .};

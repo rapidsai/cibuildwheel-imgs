@@ -42,6 +42,7 @@ jobs:
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
       BUILD_TYPE: ${{ inputs.build_type }}
       IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
+      MANYLINUX_VER: ${{ matrix.MANYLINUX_VER }}
 
   build-multiarch-manifest:
     name: manifest (${{ matrix.CUDA_VER }}, ${{ matrix.PYTHON_VER }}, ${{ matrix.LINUX_VER }})
