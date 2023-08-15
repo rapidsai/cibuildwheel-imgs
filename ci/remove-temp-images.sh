@@ -19,3 +19,8 @@ for arch in $(echo "$ARCHES" | jq .[] -r); do
     -H "Authorization: JWT $HUB_TOKEN" \
     "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
 done
+
+# Logout
+curl -X POST \
+-H "Authorization: JWT $HUB_TOKEN" \
+"https://hub.docker.com/v2/logout/"

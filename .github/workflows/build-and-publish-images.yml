@@ -52,9 +52,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Build and Push Multi-Arch Image Manifest
-        uses: ./.github/actions/build-multiarch-manifest
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
         with:
+          username: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
+          password: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+      - name: Create multiarch manifest
+        env:
           ARCHES: ${{ toJSON(matrix.ARCHES) }}
           CUDA_VER: ${{ matrix.CUDA_VER }}
           LINUX_VER: ${{ matrix.LINUX_VER }}
@@ -62,8 +66,7 @@ jobs:
           IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
           BUILD_TYPE: ${{ inputs.build_type }}
           IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
-          GPUCIBOT_DOCKERHUB_USER: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
-          GPUCIBOT_DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+        run: ci/create-multiarch-manifest.sh
 
   delete-temp-images:
     needs: [compute-matrix, build-multiarch-manifest]
@@ -75,15 +78,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Delete Temporary Docker Images
-        uses: ./.github/actions/delete-temp-images
-        with:
-          ARCHES: ${{ toJSON(matrix.ARCHES) }}
-          CUDA_VER: ${{ matrix.CUDA_VER }}
-          IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
-          LINUX_VER: ${{ matrix.LINUX_VER }}
-          PYTHON_VER: ${{ matrix.PYTHON_VER }}
-          BUILD_TYPE: ${{ inputs.build_type }}
-          IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
+      - name: Remove temporary images
+        run: ci/remove-temp-images.sh
+        env:
           GPUCIBOT_DOCKERHUB_USER: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
           GPUCIBOT_DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
+          IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
+          ARCHES: "${{ toJSON(matrix.ARCHES) }}"
