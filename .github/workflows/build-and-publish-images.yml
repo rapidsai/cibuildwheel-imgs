@@ -84,4 +84,4 @@ jobs:
           GPUCIBOT_DOCKERHUB_USER: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
           GPUCIBOT_DOCKERHUB_TOKEN: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
-          ARCHES: "${{ toJSON(matrix.ARCHES) }}"
+          ARCHES: ${{ toJSON(matrix.ARCHES) }}

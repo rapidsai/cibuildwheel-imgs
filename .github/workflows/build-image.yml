@@ -39,7 +39,7 @@ jobs:
         PYTHON_VER: ["${{ inputs.PYTHON_VER }}"]
         MANYLINUX_VER: ["${{ inputs.MANYLINUX_VER }}"]
       fail-fast: false
-    runs-on: "linux-${{ matrix.ARCH }}-cpu4"
+    runs-on: linux-${{ matrix.ARCH }}-cpu4
     steps:
       - name: Checkout
         uses: actions/checkout@v3
