@@ -1,7 +1,7 @@
 def compute_arch($x):
   ["amd64"] |
   if
-    ["ubuntu18.04", "centos7"] | any(index($x.LINUX_VER))
+    ["ubuntu18.04", "centos7"] | index($x.LINUX_VER) != null
   then
     .
   else
@@ -33,7 +33,7 @@ def compute_tag_prefix($x):
 
 def compute_manylinux_version($x):
   if
-    $x.LINUX_VER == "ubuntu20.04" // $x.LINUX_VER == "ubuntu18.04"
+    ["ubuntu18.04", "ubuntu20.04"] | index($x.LINUX_VER) != null
   then
     "manylinux_2_31"
   else

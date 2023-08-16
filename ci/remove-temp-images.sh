@@ -9,16 +9,14 @@ HUB_TOKEN=$(
 )
 echo "::add-mask::${HUB_TOKEN}"
 
-org=${IMAGE_NAME%%/*}
-temp=${IMAGE_NAME#*/}
-repo=${temp%%:*}
+full_repo_name=${IMAGE_NAME%%:*}
 tag=${IMAGE_NAME##*:}
 
 for arch in $(echo "$ARCHES" | jq .[] -r); do
   curl --fail-with-body -i -X DELETE \
     -H "Accept: application/json" \
     -H "Authorization: JWT $HUB_TOKEN" \
-    "https://hub.docker.com/v2/repositories/$org/$repo/tags/$tag-$arch/"
+    "https://hub.docker.com/v2/repositories/$full_repo_name/tags/$tag-$arch/"
 done
 
 # Logout

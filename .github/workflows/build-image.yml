@@ -18,9 +18,6 @@ on:
       IMAGE_REPO:
         required: true
         type: string
-      BUILD_TYPE:
-        required: true
-        type: string
       IMAGE_NAME:
         required: true
         type: string
@@ -49,7 +46,6 @@ jobs:
           username: ${{ secrets.GPUCIBOT_DOCKERHUB_USER }}
           password: ${{ secrets.GPUCIBOT_DOCKERHUB_TOKEN }}
       - name: Set up Docker Context for Buildx
-        id: buildx-context
         run: |
           docker context create builders
       - name: Set up Docker Buildx

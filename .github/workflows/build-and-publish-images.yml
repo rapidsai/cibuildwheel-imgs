@@ -39,7 +39,6 @@ jobs:
       LINUX_VER: ${{ matrix.LINUX_VER }}
       PYTHON_VER: ${{ matrix.PYTHON_VER }}
       IMAGE_REPO: ${{ matrix.IMAGE_REPO }}
-      BUILD_TYPE: ${{ inputs.build_type }}
       IMAGE_NAME: ${{ matrix.IMAGE_NAME }}
       MANYLINUX_VER: ${{ matrix.MANYLINUX_VER }}
 
@@ -71,7 +70,6 @@ jobs:
   delete-temp-images:
     needs: [compute-matrix, build-multiarch-manifest]
     runs-on: ubuntu-latest
-    if: inputs.build_type == 'branch'
     strategy:
       matrix: ${{ fromJSON(needs.compute-matrix.outputs.MATRIX) }}
       fail-fast: false
