@@ -26,7 +26,7 @@ on:
         type: string
 
 jobs:
-  docker-build:
+  run:
     name: build (${{ matrix.CUDA_VER }}, ${{ matrix.PYTHON_VER }}, ${{ matrix.LINUX_VER }}, ${{ matrix.ARCH }})
     strategy:
       matrix:
@@ -53,7 +53,7 @@ jobs:
         with:
           driver: docker
           endpoint: builders
-      - name: Get Real Arch and Manylinux Version
+      - name: Get Real Arch Version
         id: get-real-arch
         run: |
           REAL_ARCH=$(arch)
