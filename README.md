@@ -1,5 +1,7 @@
 # cibuildwheel-imgs
 
+> **📣 Deprecation notice 📣**: The images in this repository have been moved to [rapidsai/ci-imgs](https://github.com/rapidsai/ci-imgs) in https://github.com/rapidsai/ci-imgs/pull/65. Future changes should be made in that repository.
+
 This repository contains all images used to build [RAPIDS pip wheel](https://rapids.ai/pip) releases.
 
 * `citestwheel` images are for running tests
